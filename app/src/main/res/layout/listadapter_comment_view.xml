@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+
+    <ImageView
+        android:id="@+id/depthDummy"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@color/gray"/>
+
+
+    <LinearLayout
+        android:id="@+id/layoutDepth"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="0"
+        android:layout_marginLeft="10dp"
+        android:orientation="vertical"
+        android:layout_gravity="left">
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:orientation="horizontal"
+            android:layout_weight="0"
+            android:layout_gravity="left"
+            android:layout_marginTop="5dp">
+
+
+            <Button
+                android:id="@+id/hide"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:textSize="10dp"
+                android:text="HIDE"/>
+
+            <TextView
+                android:id="@+id/author"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:textSize="14dp"
+                android:text="author" />
+
+            <TextView
+                android:id="@+id/scoreNtime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:textSize="12dp"
+                android:text="0 points 0 hours ago" />
+
+
+
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/body"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:textSize="12dp"
+            android:text="content" />
+
+
+        <LinearLayout
+            android:id="@+id/layoutUtility"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_weight="0"
+            android:layout_gravity="left">
+
+
+            <Button
+                android:id="@+id/upvote"
+                android:layout_width="40dp"
+                android:layout_height="35dp"
+                android:textSize="10dp"
+                android:text="up"/>
+
+
+            <Button
+                android:id="@+id/downvote"
+                android:layout_width="40dp"
+                android:layout_height="35dp"
+                android:textSize="10dp"
+                android:text="do"/>
+
+
+
+
+            <Button
+                android:id="@+id/permalink"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:textSize="10dp"
+                android:text="permalink"/>
+
+
+            <Button
+                android:id="@+id/parent"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:textSize="10dp"
+                android:text="parents"/>
+
+
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
