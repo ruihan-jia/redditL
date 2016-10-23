@@ -14,14 +14,13 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import rick.redditl.adapter.CommentListAdapter;
-import rick.redditl.data.CommentData;
+import rick.redditl.model.CommentData;
 import rick.redditl.helper.JSONParser;
-import rick.redditl.data.PostData;
+import rick.redditl.model.PostData;
 import rick.redditl.R;
-import rick.redditl.data.previewImages;
+import rick.redditl.model.PreviewImageData;
 
 public class CommentPage extends AppCompatActivity {
 
@@ -141,21 +140,21 @@ public class CommentPage extends AppCompatActivity {
                         //getting preview images for the post
                         JSONObject previewData = jsonPostData.getJSONObject("preview").getJSONArray("images").getJSONObject(0);
                         JSONObject previewSource = previewData.getJSONObject("source");
-                        previewImages tempImage = new previewImages((String) previewSource.getString("url"),
+                        PreviewImageData tempImage = new PreviewImageData((String) previewSource.getString("url"),
                                 (int) previewSource.getInt("width"), (int) previewSource.getInt("height"));
                         //setting preview images for the item in the list
                         oPostData.setPreviewSource(tempImage);
                         //getting preview image resolutions
                         JSONArray previewResolutions = previewData.getJSONArray("resolutions");
                         int resolutionNum = previewResolutions.length();
-                        previewImages tempImages[] = new previewImages[resolutionNum];
+                        PreviewImageData tempImages[] = new PreviewImageData[resolutionNum];
                         for (int j = 0; j < resolutionNum; j++) {
                             JSONObject imageResolutionData = previewResolutions.getJSONObject(j);
-                            tempImages[j] = new previewImages((String) imageResolutionData.getString("url"),
+                            tempImages[j] = new PreviewImageData((String) imageResolutionData.getString("url"),
                                     (int) imageResolutionData.getInt("width"), (int) imageResolutionData.getInt("height"));
                             //Log.w(TAG,"loop is " + j + " with resolution url " + imageResolutionData.getString("url"));
                         }
-                        oPostData.setResolution(tempImages);
+                        oPostData.setPreviewImagesRes(tempImages);
                     }
 
                     //=============END parsing data for post========================
@@ -268,13 +267,13 @@ public class CommentPage extends AppCompatActivity {
         Log.w(TAG,"depth is " + depthIn + ". chain length is " + cidChain.size());
 
         for(CommentData object: mComments) {
-            Log.w(TAG,"cid comp " + object.cid + " == " + cidChain.get(depthIn - 1));
-            if(object.cid == cidChain.get(depthIn - 1)) {
+            Log.w(TAG,"cid comp " + object.getCid() + " == " + cidChain.get(depthIn - 1));
+            if(object.getCid() == cidChain.get(depthIn - 1)) {
 
                 if(depthIn == 1)
                     return object;
                 else
-                    return findComment(object.replies, cidChain, depthIn - 1);
+                    return findComment(object.getReplies(), cidChain, depthIn - 1);
             }
 
         }

@@ -19,11 +19,11 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import rick.redditl.adapter.PostListAdapter;
 import rick.redditl.helper.JSONParser;
-import rick.redditl.data.PostData;
+import rick.redditl.model.PostData;
 import rick.redditl.R;
-import rick.redditl.adapter.postListAdapter;
-import rick.redditl.data.previewImages;
+import rick.redditl.model.PreviewImageData;
 
 
 public class MainPage extends AppCompatActivity {
@@ -38,7 +38,7 @@ public class MainPage extends AppCompatActivity {
 
     public ArrayList<PostData> postsList;
 
-    postListAdapter adapter;
+    PostListAdapter adapter;
 
 
     @Override
@@ -53,45 +53,10 @@ public class MainPage extends AppCompatActivity {
 
         postsList = new ArrayList<PostData>();
 
-
-
-        adapter = new postListAdapter(this, postsList);
+        adapter = new PostListAdapter(this, postsList);
         mainListView.setAdapter(adapter);
 
-        /*
-        mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, final View view,
-                                    int position, long id) {
-                final String item = (String) parent.getItemAtPosition(position);
-                view.animate().setDuration(2000).alpha(0)
-                        .withEndAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                threadsList.remove(item);
-                                adapter.notifyDataSetChanged();
-                                view.setAlpha(1);
-                            }
-                        });
-            }
-        });
-        */
-
-        /*
-        //WebView Object
-        WebView browser;
-        browser=(WebView)findViewById(R.id.webPage);
-        //Enable Javascript
-        browser.getSettings().setJavaScriptEnabled(true);
-        //Inject WebAppInterface methods into Web page by having Interface name 'Android'
-        browser.addJavascriptInterface(new WebAppInterface(), "Android");
-        //Load URL inside WebView
-        browser.loadUrl("http://www.reddit.com");
-        */
-
         String url = "https://www.reddit.com/.json";
-
         url = url + "?raw_json=1";
 
 
@@ -168,8 +133,6 @@ public class MainPage extends AppCompatActivity {
             }
 
             if (json != null) {
-                //Toast.makeText(MainPage.this, json.toString(), Toast.LENGTH_LONG).show();
-
                 try {
                     JSONObject data = json.getJSONObject("data");
                     JSONArray posts = data.getJSONArray("children");
@@ -205,7 +168,7 @@ public class MainPage extends AppCompatActivity {
                             //getting preview images for the post
                             JSONObject previewData = PostData.getJSONObject("preview").getJSONArray("images").getJSONObject(0);
                             JSONObject previewSource = previewData.getJSONObject("source");
-                            previewImages tempImage = new previewImages((String) previewSource.getString("url"),
+                            PreviewImageData tempImage = new PreviewImageData((String) previewSource.getString("url"),
                                     (int) previewSource.getInt("width"), (int) previewSource.getInt("height"));
 
                             //setting preview images for the item in the list
@@ -214,18 +177,18 @@ public class MainPage extends AppCompatActivity {
                             //getting preview image resolutions
                             JSONArray previewResolutions = previewData.getJSONArray("resolutions");
                             int resolutionNum = previewResolutions.length();
-                            previewImages tempImages[] = new previewImages[resolutionNum];
+                            PreviewImageData tempImages[] = new PreviewImageData[resolutionNum];
                             for (int j = 0; j < resolutionNum; j++) {
                                 JSONObject imageResolutionData = previewResolutions.getJSONObject(j);
 
-                                tempImages[j] = new previewImages((String) imageResolutionData.getString("url"),
+                                tempImages[j] = new PreviewImageData((String) imageResolutionData.getString("url"),
                                         (int) imageResolutionData.getInt("width"), (int) imageResolutionData.getInt("height"));
 
                                 Log.w(TAG,"loop is " + j + " with resolution url " + imageResolutionData.getString("url"));
 
 
                             }
-                            postsData[i].setResolution(tempImages);
+                            postsData[i].setPreviewImagesRes(tempImages);
 
                         }
 

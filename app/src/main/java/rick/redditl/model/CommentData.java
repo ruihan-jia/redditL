@@ -1,7 +1,9 @@
-package rick.redditl.data;
+package rick.redditl.model;
 import android.util.Log;
 
 import java.util.ArrayList;
+
+import rick.redditl.adapter.CommentListAdapter;
 
 /**
  * Created by Rick on 2016-10-02.
@@ -49,7 +51,6 @@ public class CommentData {
         depth = depthIn;
 
         hidden = false;
-
     }
 
     public CommentData(String kindIn, String cidIn, String parentIdIn) {
@@ -58,7 +59,6 @@ public class CommentData {
         parentId = parentIdIn;
 
         hidden = false;
-
     }
 
     public String getKind() {
@@ -105,9 +105,12 @@ public class CommentData {
         return count;
     }
 
+    public ArrayList<CommentData> getReplies() {
+        return replies;
+    }
+
     public void setReplies(ArrayList<CommentData> repliesIn) {
         replies = repliesIn;
-
     }
 
     public void hideComment() {
@@ -128,7 +131,6 @@ public class CommentData {
                 hideCommentHelper(object);
             }
         }
-
     }
 
 

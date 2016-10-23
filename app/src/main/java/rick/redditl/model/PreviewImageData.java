@@ -1,15 +1,15 @@
-package rick.redditl.data;
+package rick.redditl.model;
 
 /**
  * Created by Rick on 2016-09-21.
  */
-public class previewImages {
+public class PreviewImageData {
 
     public String url;
     public int width;
     public int height;
 
-    public previewImages (String urlIn, int widthIn, int heightIn) {
+    public PreviewImageData (String urlIn, int widthIn, int heightIn) {
 
         url = urlIn;
         width = widthIn;

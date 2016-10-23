@@ -1,11 +1,8 @@
 package rick.redditl.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,33 +17,30 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import rick.redditl.activity.CommentPage;
-import rick.redditl.data.CommentData;
+import rick.redditl.model.CommentData;
 import rick.redditl.R;
 import rick.redditl.helper.TimeHelper;
 
 /**
  * Created by Rick on 2016-10-02.
  * references:http://www.vogella.com/tutorials/AndroidListView/article.html#listview_defaultadapter
+ * creating each element in the list
  */
 public class CommentListAdapter extends ArrayAdapter<CommentData> {
     private Context mContext;
 
     //public LayoutInflater inflater;
-
     String TAG = "CommentListAdapter";
-
-
-
 
     public CommentListAdapter(Context contextIn, ArrayList<CommentData> CommentDataIn) {
         super(contextIn, 0, CommentDataIn);
-
-
         mContext = contextIn;
-
     }
 
-
+    /*
+     * when each element is initialized, populate it with the correct information
+     * also set on click listeners for the buttons
+     */
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
 

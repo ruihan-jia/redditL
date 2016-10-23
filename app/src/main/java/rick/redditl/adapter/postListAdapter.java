@@ -26,9 +26,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
-import rick.redditl.data.PostData;
+import rick.redditl.model.PostData;
 import rick.redditl.R;
 import rick.redditl.activity.CommentPage;
 import rick.redditl.activity.WebActivity;
@@ -41,13 +40,13 @@ import rick.redditl.helper.TimeHelper;
  * https://github.com/codepath/android_guides/wiki/Using-an-ArrayAdapter-with-ListView
  *
  */
-public class postListAdapter extends ArrayAdapter<PostData> {
+public class PostListAdapter extends ArrayAdapter<PostData> {
 
     private Context context;
 
     //public LayoutInflater inflater;
 
-    String TAG = "postListAdapter";
+    String TAG = "PostListAdapter";
 
     //screen size
     int screenWidth;
@@ -55,7 +54,7 @@ public class postListAdapter extends ArrayAdapter<PostData> {
 
 
 
-    public postListAdapter(Context contextIn, ArrayList<PostData> PostData) {
+    public PostListAdapter(Context contextIn, ArrayList<PostData> PostData) {
         super(contextIn, 0, PostData);
 
         context = contextIn;
@@ -125,7 +124,7 @@ public class postListAdapter extends ArrayAdapter<PostData> {
                 Log.w(TAG, "set existing image position " + position);
             }else{
                 new previewImageTask(previewImageView,postItem)
-                        .execute(postItem.getPreviewLowReso().url);
+                        .execute(postItem.getPreviewImagesLowReso().url);
                 Log.w(TAG,"get new image position " + position);
             }
 

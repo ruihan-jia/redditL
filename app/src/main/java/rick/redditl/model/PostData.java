@@ -1,4 +1,4 @@
-package rick.redditl.data;
+package rick.redditl.model;
 
 import android.graphics.Bitmap;
 
@@ -21,8 +21,8 @@ public class PostData {
     private String domain;
 
     //preview images
-    private previewImages previewSource;
-    private previewImages[] previewResolutions;
+    private PreviewImageData previewSource;
+    private PreviewImageData[] previewImagesRes;
     private String previewID;
     private Bitmap previewThumbnail;
 
@@ -51,11 +51,8 @@ public class PostData {
         selfText = selfTextIn;
         domain = domainIn;
 
-
         imageExpanded = false;
-
     }
-
 
     public String getTitle() {
         return title;
@@ -101,50 +98,58 @@ public class PostData {
         return domain;
     }
 
-    public previewImages getPreviewSource() {
+    public PreviewImageData getPreviewSource() {
         return previewSource;
     }
 
-    public previewImages[] getPreviewImages() {
-        return previewResolutions;
+    public void setPreviewSource(PreviewImageData sourceIn) {
+        previewSource = sourceIn;
     }
 
-    public previewImages getPreviewLowReso () {
-        return previewResolutions[0];
+    //get all the preview images in different resolutions
+    public PreviewImageData[] getPreviewImagesRes() {
+        return previewImagesRes;
+    }
+
+    public void setPreviewImagesRes (PreviewImageData[] resolutionsIn) {
+        previewImagesRes = resolutionsIn;
+    }
+
+    //get the first lowest resolution image
+    public PreviewImageData getPreviewImagesLowReso () {
+        return previewImagesRes[0];
     }
 
     public Bitmap getPreviewThumbnail () {
         return previewThumbnail;
     }
 
+    public void setPreviewThumbnail (Bitmap previewThumbnailIn) {
+        previewThumbnail = previewThumbnailIn;
+    }
+
     public Bitmap getExpandedImage () {
         return expandedImage;
+    }
+
+    public void setExpandedImage (Bitmap expandedImageIn) {
+        expandedImage = expandedImageIn;
     }
 
     public boolean getImageExpanded () {
         return imageExpanded;
     }
 
-    public void setPreviewSource(previewImages sourceIn) {
-        previewSource = sourceIn;
-    }
-
-    public void setResolution (previewImages[] resolutionsIn) {
-        previewResolutions = resolutionsIn;
-    }
-
-    public void setPreviewThumbnail (Bitmap previewThumbnailIn) {
-        previewThumbnail = previewThumbnailIn;
-    }
-
-
-    public void setExpandedImage (Bitmap expandedImageIn) {
-        expandedImage = expandedImageIn;
-    }
-
     public void setImageExpanded(Boolean expand) {
         imageExpanded = expand;
     }
+
+
+
+
+
+
+
 
 
 }
