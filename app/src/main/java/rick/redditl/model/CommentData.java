@@ -115,7 +115,7 @@ public class CommentData {
 
     public void hideComment() {
         hidden = true;
-        Log.w(TAG, "comment hidden");
+        Log.w(TAG, "comment hidden, cid " + cid);
         if(replies != null) {
             for(CommentData object: replies) {
                 hideCommentHelper(object);
@@ -125,7 +125,7 @@ public class CommentData {
 
     public void hideCommentHelper (CommentData input) {
         input.gone = true;
-        Log.w(TAG, "comment gone");
+        Log.w(TAG, "comment gone, cid " + input.cid);
         if(input.replies != null) {
             for(CommentData object: input.replies) {
                 hideCommentHelper(object);

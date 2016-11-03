@@ -33,7 +33,7 @@
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:divider="#CCCCCC"
-        android:dividerHeight="2dp" >
+        android:dividerHeight="0dp" >
     </ListView>
 
 

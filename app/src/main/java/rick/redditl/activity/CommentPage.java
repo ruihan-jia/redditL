@@ -27,6 +27,8 @@ public class CommentPage extends AppCompatActivity {
     public PostData oPostData;
     public ArrayList<CommentData> oComments;
     CommentListAdapter oCommentAdapter;
+    ListView commentListView;
+    int numNonGone = 0;
 
     public String TAG = "CommentPage";
 
@@ -40,7 +42,7 @@ public class CommentPage extends AppCompatActivity {
         oComments = new ArrayList<CommentData>();
         oCommentAdapter = new CommentListAdapter(this, oComments);
 
-        ListView commentListView = (ListView) findViewById(R.id.commentListView);
+        commentListView = (ListView) findViewById(R.id.commentListView);
         commentListView.setAdapter(oCommentAdapter);
 
 
@@ -243,6 +245,7 @@ public class CommentPage extends AppCompatActivity {
 
             }
 
+            findNumNonGone();
             oCommentAdapter.notifyDataSetChanged();
 
         } catch (JSONException e) {
@@ -254,17 +257,43 @@ public class CommentPage extends AppCompatActivity {
 
     }
 
+    /*
+     * Takes a chain of cids and the depth of comment
+     * calls findComment method to find the object
+     * then call the object's hideComment method to set its parameters to hidden
+     * Afterwards, notify data has changed so that the list is updated
+     *
+     * @param cidChain  an arraylist of cids
+     */
     public void hideComment(ArrayList<String> cidChain, int depthIn)
     {
 
         findComment(oComments, cidChain, depthIn + 1).hideComment();
 
+        findNumNonGone();
         oCommentAdapter.notifyDataSetChanged();
     }
 
+    public void hideComment(String cidIn)
+    {
+
+        Log.w(TAG, "hide comment with cid " + cidIn);
+        CommentData temp = findComment(oComments, cidIn);
+        if(temp!=null) {
+            temp.hideComment();
+        } else {
+            Log.w(TAG, "no comment with cid " + cidIn + " found");
+        }
+
+
+        oCommentAdapter.notifyDataSetChanged();
+    }
+
+
+    //find the specified comment recursively with the helper of cid chain
     public CommentData findComment(ArrayList<CommentData> mComments, ArrayList<String> cidChain, int depthIn)
     {
-        Log.w(TAG,"depth is " + depthIn + ". chain length is " + cidChain.size());
+        Log.w(TAG, "depth is " + depthIn + ". chain length is " + cidChain.size());
 
         for(CommentData object: mComments) {
             Log.w(TAG,"cid comp " + object.getCid() + " == " + cidChain.get(depthIn - 1));
@@ -279,6 +308,55 @@ public class CommentPage extends AppCompatActivity {
         }
         return null;
 
+    }
+
+    public CommentData findComment(ArrayList<CommentData> mComments, String cidIn) {
+        for(CommentData object: mComments) {
+            Log.w(TAG,"comp cid " + object.getCid() + " with author " + object.getAuthor());
+            if(object.getCid() == cidIn) {
+                return object;
+            }
+            else {
+                if(object.getReplies()!=null) {
+                    CommentData temp = findComment(object.getReplies(), cidIn);
+                    if(temp != null) {
+                        return temp;
+                    }
+                }
+            }
+
+        }
+        return null;
+    }
+
+    public void removeListAdapterElements(ArrayList<CommentData> marker) {
+        if(marker!= null) {
+            for(CommentData object: marker) {
+                Log.w(TAG,"removed comment author " + object.getAuthor() + " with cid " + object.getCid());
+                oCommentAdapter.remove(object);
+            }
+            oCommentAdapter.notifyDataSetChanged();
+        }
+    }
+
+
+    public void findNumNonGone() {
+        numNonGone = 0;
+        findNumNonGoneHelper(oComments);
+    }
+
+    public int getNumNonGone() {
+        return numNonGone;
+    }
+
+    public void findNumNonGoneHelper(ArrayList<CommentData> mComments) {
+        for(CommentData object: mComments) {
+            if(!object.getGone())
+                numNonGone++;
+            if(object.getReplies()!=null) {
+                findNumNonGoneHelper(object.getReplies());
+            }
+        }
     }
 
 
