@@ -210,6 +210,11 @@ public class PostListAdapter extends ArrayAdapter<PostData> {
         return convertView;
     }
 
+    /**
+     * Takes an url and checks if it is an image file.
+     * If it is, set the expanded image to the url image
+     * Else opens up an webview and load the url
+     */
     public class checkUrl extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
         Bitmap mIcon11 = null;
@@ -232,7 +237,6 @@ public class PostListAdapter extends ArrayAdapter<PostData> {
             }
             String contentType = connection.getHeaderField("Content-Type");
             Boolean img = contentType.startsWith("image/");
-
             Log.w(TAG,"img is " + img);
 
             if(img) {
@@ -243,15 +247,12 @@ public class PostListAdapter extends ArrayAdapter<PostData> {
                     Log.e("Error", e.getMessage());
                     e.printStackTrace();
                 }
-
             }
 
             return mIcon11;
         }
 
         protected void onPostExecute(Bitmap result) {
-
-
             if (result != null) {
                 Log.w(TAG, "setting image");
 
@@ -276,36 +277,35 @@ public class PostListAdapter extends ArrayAdapter<PostData> {
         }
     }
 
-
-    //open new webview activity
+    /**
+     * Open a new webview activity from the url
+     *
+     * @param urlIn
+     */
     public void openWeb (String urlIn) {
-
         Intent intent = new Intent(context,WebActivity.class);
 
-
         intent.putExtra("URL", urlIn);
         context.startActivity(intent);
-
-
     }
 
-
-    //open new webview activity
+    /**
+     * Open the comment activity from the url
+     *
+     * @param urlIn
+     */
     public void openComments (String urlIn) {
-
         Intent intent = new Intent(context,CommentPage.class);
 
-
         intent.putExtra("URL", urlIn);
         context.startActivity(intent);
-
-
     }
 
-
-
-    //get preview iamge from server
-    //http://stackoverflow.com/questions/2471935/how-to-load-an-imageview-by-url-in-android
+    /**
+     * Get the preview image from server
+     * From
+     * http://stackoverflow.com/questions/2471935/how-to-load-an-imageview-by-url-in-android
+     */
     public class previewImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
         PostData post;

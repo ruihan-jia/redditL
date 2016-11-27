@@ -7,12 +7,17 @@ import rick.redditl.adapter.CommentListAdapter;
 
 /**
  * Created by Rick on 2016-10-02.
+ *
+ * Comment data will be saved in a tree structure
+ * Each node can have a number of sub-nodes stored in the replies variable
+ * Each node has a number to help with ease of access
  */
 public class CommentData {
 
     public String TAG = "CommentData";
 
-    private String kind; //could be t1, more or listing. listing does nothing
+    private int nodeNum;    //gives each comment a number to keep track in the tree
+    private String kind;     //could be t1, more or listing. listing does nothing
     //common
     private String cid;
     private String parentId;
@@ -38,9 +43,10 @@ public class CommentData {
 
     }
 
-    public CommentData(String kindIn, String cidIn, String parentIdIn, String contentIn, String authorIn,
+    public CommentData(int nodeNumIn, String kindIn, String cidIn, String parentIdIn, String contentIn, String authorIn,
                        int scoreIn,long timeCreatedIn,int depthIn) {
 
+        nodeNum = nodeNumIn;
         kind = kindIn;
         cid = cidIn;
         parentId = parentIdIn;
@@ -51,14 +57,22 @@ public class CommentData {
         depth = depthIn;
 
         hidden = false;
+
+        Log.d(TAG, "comment created, nodeNum is " + nodeNumIn + ", cid is " + cid +
+                ", author is " + author + ", depth is " + depth);
     }
 
-    public CommentData(String kindIn, String cidIn, String parentIdIn) {
+    public CommentData(int nodeNumIn, String kindIn, String cidIn, String parentIdIn) {
+        nodeNum = nodeNumIn;
         kind = kindIn;
         cid = cidIn;
         parentId = parentIdIn;
 
         hidden = false;
+    }
+
+    public int getNodeNum() {
+        return nodeNum;
     }
 
     public String getKind() {
@@ -113,9 +127,12 @@ public class CommentData {
         replies = repliesIn;
     }
 
+    /**
+     * Set the comment to hidden, and set all the comments below it to gone
+     */
     public void hideComment() {
         hidden = true;
-        Log.w(TAG, "comment hidden, cid " + cid);
+        Log.d(TAG, "comment hidden, nodeNum: " + nodeNum + ", cid: " + cid);
         if(replies != null) {
             for(CommentData object: replies) {
                 hideCommentHelper(object);
@@ -123,9 +140,14 @@ public class CommentData {
         }
     }
 
+    /**
+     * Helper function, set the comment and all its sub comments to gone
+     *
+     * @param input
+     */
     public void hideCommentHelper (CommentData input) {
         input.gone = true;
-        Log.w(TAG, "comment gone, cid " + input.cid);
+        Log.d(TAG, "comment gone, nodeNum: " + nodeNum + ", cid: " + cid);
         if(input.replies != null) {
             for(CommentData object: input.replies) {
                 hideCommentHelper(object);
@@ -133,6 +155,27 @@ public class CommentData {
         }
     }
 
+    public void showComment() {
+        hidden = false;
+        Log.d(TAG, "comment shown, nodeNum: " + nodeNum + ", cid: " + cid);
+        if(replies != null) {
+            for(CommentData object: replies) {
+                if(object.getGone())
+                showCommentHelper(object);
+            }
+        }
+    }
+
+    public void showCommentHelper (CommentData input) {
+        if(input.gone == true)
+        input.gone = true;
+        //Log.d(TAG, "comment gone, nodeNum: " + nodeNum + ", cid: " + cid);
+        if(input.replies != null) {
+            for(CommentData object: input.replies) {
+                showCommentHelper(object);
+            }
+        }
+    }
 
 
 }

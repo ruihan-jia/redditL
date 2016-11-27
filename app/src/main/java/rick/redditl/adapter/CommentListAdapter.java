@@ -47,20 +47,7 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
 
         Log.w(TAG, "getview called, position " + position);
 
-/*
-        int i = 0;
-        int j = 0;
-        while(i<=position && j < getCount()-2) {
-            if(!getItem(j).getGone())
-                i++;
-            if(i<=position)
-                j++;
-        }
-        position = j;
-*/
         final CommentData oComment = getItem(position);
-
-        //Log.w(TAG, "after change, position " + position + " author is " + oComment.getAuthor());
 
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {
@@ -95,6 +82,7 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
         hideBTN.setVisibility(View.VISIBLE);
 
         //check if hidden or gone
+        //gone deprecated. since gone comments are removed from listadapter object
         if(!oComment.getGone()) {
             if(oComment.getHidden() == false) {
 
@@ -103,6 +91,7 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
 
                     showBTN.setVisibility(View.GONE);
 
+                    //display information
                     android.view.ViewGroup.LayoutParams layoutParams = depthDummy.getLayoutParams();
                     layoutParams.width = oComment.getDepth()*20;
                     depthDummy.setLayoutParams(layoutParams);
@@ -121,56 +110,55 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
             } else {
                 //comment is hidden
                 Log.w(TAG, "comment is hidden, depth " + oComment.getDepth());
+                //set various visibilities
                 hideBTN.setVisibility(View.GONE);
                 showBTN.setVisibility(View.VISIBLE);
                 layoutUtilLL.setVisibility(LinearLayout.GONE);
                 bodyTV.setVisibility(View.GONE);
 
+                //display information
+                android.view.ViewGroup.LayoutParams layoutParams = depthDummy.getLayoutParams();
+                layoutParams.width = oComment.getDepth()*20;
+                depthDummy.setLayoutParams(layoutParams);
+                authorTV.setText(oComment.getAuthor());
+                SpannableString spanString =  new SpannableString(oComment.getScore() + " points " + TimeHelper.timeSincePost(oComment.getTimeCreated()) + " ago");
+                spanString.setSpan(new StyleSpan(Typeface.BOLD), 0, Integer.toString(oComment.getScore()).length() + 7, 0); // set bold
+                scoreNtimeTV.setText(spanString);
+
+
             }
         } else {
+            //should no longer enter here
             layoutMainLL.setVisibility(LinearLayout.GONE);
             Log.w(TAG, "comment is gone, depth " + oComment.getDepth());
-            //convertView = LayoutInflater.from(getContext()).inflate(R.layout.null_item, null);
         }
 
 
-
         final int position1 = position;
-        /*
-         * When user clicks on the hide button, traverse the list from current position back to top
-         * record every parent comment's cid into an array, until it reaches the 0 depth
-         * the result is an arraylist of cids from the 0 depth all the way to selected comment
-         * with one comment per level.
-         * This arraylist is then passed to the hidecomment method along with the comment's depth
-         * in the CommentPage method.
-         */
+
+        // When user clicks on the hide button, call the hideComment method from CommentPage.
         hideBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.w(TAG, "test position " + position1);
+                Log.d(TAG, "Onclick hide position " + position1 + ". nodenum is " + oComment.getNodeNum());
 
-                /*
-                int curDepth = oComment.getDepth();
-                ArrayList<String> marker = new ArrayList<String>();
-                marker.add(oComment.getCid());
-                int i = position1 - 1;
+                //change the data in CommentData arraylist
+                ((CommentPage)mContext).hideComment(oComment.getNodeNum());
 
-                while(curDepth != 0) {
-                    CommentData temp = getItem(i);
-
-                    if(temp.getDepth() < curDepth) {
-                        curDepth = temp.getDepth();
-                        marker.add(temp.getCid());
-                    }
-
-                    i--;
-                }
-
-                ((CommentPage)mContext).hideComment(marker, oComment.getDepth());
-                */
-                ((CommentPage)mContext).hideComment(oComment.getCid());
-
+                //remove the data from the list adapter object
                 ((CommentPage)mContext).removeListAdapterElements(findChildCommentsPos(position));
+
+
+            }
+        });
+
+
+        // When user clicks on the show button,
+        showBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "Onclick show position " + position1 + ". nodenum is " + oComment.getNodeNum());
+
 
 
             }
@@ -181,6 +169,12 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
         return convertView;
     }
 
+    /**
+     * Given a position in the list adapter, find all the child comment positions
+     *
+     * @param position
+     * @return ArrayList<CommentData>
+     */
     public ArrayList<CommentData> findChildCommentsPos(int position) {
         int posDepth = getItem(position).getDepth();
         ArrayList<CommentData> marker = new ArrayList<CommentData>();

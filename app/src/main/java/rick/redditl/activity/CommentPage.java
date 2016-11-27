@@ -28,6 +28,7 @@ public class CommentPage extends AppCompatActivity {
     public ArrayList<CommentData> oComments;
     CommentListAdapter oCommentAdapter;
     ListView commentListView;
+    int nodeNum = 0;
     int numNonGone = 0;
 
     public String TAG = "CommentPage";
@@ -107,18 +108,14 @@ public class CommentPage extends AppCompatActivity {
         }
 
         protected void onPostExecute(JSONObject json) {
-
-
             if (json != null) {
                 //Toast.makeText(MainPage.this, json.toString(), Toast.LENGTH_LONG).show();
 
                 try {
-
                     JSONArray postNcomment = json.getJSONArray("CommentInfo");
 
                     JSONObject jsonPostData = postNcomment.getJSONObject(0).getJSONObject("data").getJSONArray("children").getJSONObject(0).getJSONObject("data");
                     JSONArray jsonComments = postNcomment.getJSONObject(1).getJSONObject("data").getJSONArray("children");
-
 
                     //=============BEGIN parsing data for post========================
                     //getting all the post data
@@ -154,7 +151,6 @@ public class CommentPage extends AppCompatActivity {
                             JSONObject imageResolutionData = previewResolutions.getJSONObject(j);
                             tempImages[j] = new PreviewImageData((String) imageResolutionData.getString("url"),
                                     (int) imageResolutionData.getInt("width"), (int) imageResolutionData.getInt("height"));
-                            //Log.w(TAG,"loop is " + j + " with resolution url " + imageResolutionData.getString("url"));
                         }
                         oPostData.setPreviewImagesRes(tempImages);
                     }
@@ -164,8 +160,9 @@ public class CommentPage extends AppCompatActivity {
 
                     //=============BEGIN parsing data for comments========================
 
-                    Log.w(TAG,"parsing comment data");
+                    Log.d(TAG,"parsing comment data");
 
+                    nodeNum = 0;
                     parseComments(jsonComments, 0);
 
                     //=============END parsing data for comments========================
@@ -181,6 +178,15 @@ public class CommentPage extends AppCompatActivity {
     }
 
 
+    /**
+     *
+     * Takes a json array and parse the current level of arrays into the CommentData data structure
+     * Then calls itself recursively to move on to the next level of json array
+     *
+     * @param jsonComments
+     * @param depth
+     * @return an arraylist of commentData
+     */
     public ArrayList<CommentData> parseComments(JSONArray jsonComments, int depth) {
         ArrayList<CommentData> replies = new ArrayList<CommentData>();;
 
@@ -203,24 +209,19 @@ public class CommentPage extends AppCompatActivity {
                     int score = commentData.getInt("score");
                     long timeCreated = commentData.getInt("created_utc");
 
+                    nodeNum++;
                     //creat the new comment object
-                    CommentData newReply = new CommentData(kind, cid, parentId, content, author, score, timeCreated, depth);
+                    CommentData newReply = new CommentData(nodeNum, kind, cid, parentId, content, author, score, timeCreated, depth);
 
                     //if depth 0, add the comment to the overall list of comments
                     if(depth == 0) {
-
                         oComments.add(newReply);
-
                     }
                     else {
                         replies.add(newReply);
                         oCommentAdapter.add(newReply);
                     }
-
-
                     //oCommentAdapter.add(newReply);
-
-                    //Log.w(TAG,"comment id is: " + cid);
 
                     JSONArray jsonReplies = null;
                     //if json has replies and the reply is not empty,
@@ -228,7 +229,6 @@ public class CommentPage extends AppCompatActivity {
                         if(!commentData.get("replies").equals("")) {
                             //set json reply info
                             jsonReplies = commentData.getJSONObject("replies").getJSONObject("data").getJSONArray("children");
-                            //Log.w(TAG,"json comment replied");
 
                         }
                     }
@@ -257,82 +257,89 @@ public class CommentPage extends AppCompatActivity {
 
     }
 
-    /*
-     * Takes a chain of cids and the depth of comment
-     * calls findComment method to find the object
-     * then call the object's hideComment method to set its parameters to hidden
-     * Afterwards, notify data has changed so that the list is updated
+
+    /**
+     * Given a nodeNum, find the CommentData object and then hide it.
      *
-     * @param cidChain  an arraylist of cids
+     * @param nodeNum
      */
-    public void hideComment(ArrayList<String> cidChain, int depthIn)
+    public void hideComment(int nodeNum)
     {
 
-        findComment(oComments, cidChain, depthIn + 1).hideComment();
-
-        findNumNonGone();
-        oCommentAdapter.notifyDataSetChanged();
-    }
-
-    public void hideComment(String cidIn)
-    {
-
-        Log.w(TAG, "hide comment with cid " + cidIn);
-        CommentData temp = findComment(oComments, cidIn);
+        Log.d(TAG, "hide comment with num " + nodeNum);
+        CommentData temp = findComment(oComments, nodeNum);
         if(temp!=null) {
             temp.hideComment();
         } else {
-            Log.w(TAG, "no comment with cid " + cidIn + " found");
+            Log.w(TAG, "no comment with nodeNum " + nodeNum + " found");
         }
 
+        oCommentAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Given a nodeNum, find the CommentData object
+     * Then change the comment to not hidden and show all the child comments
+     * Add all the child comments to the list adapter object
+     *
+     * @param nodeNum
+     */
+    public void showComment(int nodeNum)
+    {
+
+        Log.d(TAG, "show comment with num " + nodeNum);
+
+        CommentData temp = findComment(oComments, nodeNum);
+        if(temp!=null) {
+            //temp.showComment();
+        } else {
+            Log.w(TAG, "no comment with nodeNum " + nodeNum + " found");
+        }
 
         oCommentAdapter.notifyDataSetChanged();
     }
 
 
-    //find the specified comment recursively with the helper of cid chain
-    public CommentData findComment(ArrayList<CommentData> mComments, ArrayList<String> cidChain, int depthIn)
-    {
-        Log.w(TAG, "depth is " + depthIn + ". chain length is " + cidChain.size());
+    /**
+     * Given a nodeNum, find and return the object it belongs to recursively
+     *
+     * @param mComments
+     * @param nodeNum
+     * @return
+     */
+    public CommentData findComment(ArrayList<CommentData> mComments, int nodeNum) {
+        int cLen = mComments.size();
+        int j = 1;
 
-        for(CommentData object: mComments) {
-            Log.w(TAG,"cid comp " + object.getCid() + " == " + cidChain.get(depthIn - 1));
-            if(object.getCid() == cidChain.get(depthIn - 1)) {
+        for(int i = 0; i < cLen; i++){
 
-                if(depthIn == 1)
-                    return object;
-                else
-                    return findComment(object.getReplies(), cidChain, depthIn - 1);
-            }
-
-        }
-        return null;
-
-    }
-
-    public CommentData findComment(ArrayList<CommentData> mComments, String cidIn) {
-        for(CommentData object: mComments) {
-            Log.w(TAG,"comp cid " + object.getCid() + " with author " + object.getAuthor());
-            if(object.getCid() == cidIn) {
-                return object;
-            }
-            else {
-                if(object.getReplies()!=null) {
-                    CommentData temp = findComment(object.getReplies(), cidIn);
-                    if(temp != null) {
-                        return temp;
-                    }
+            //reached last comment in the arraylist of comments or nodeNum is before the next comment
+            if(j >= cLen || mComments.get(j).getNodeNum() > nodeNum) {
+                //if this comment is the one, return
+                if(mComments.get(i).getNodeNum() == nodeNum) {
+                    return mComments.get(i);
+                } else {
+                    //go to next level to check for num
+                    return findComment(mComments.get(i).getReplies(), nodeNum);
                 }
             }
 
+            j++;
         }
+
         return null;
+
     }
 
+    /**
+     * Given a list of CommentData objects, remove them from the list adapter object.
+     *
+     * @param marker
+     */
     public void removeListAdapterElements(ArrayList<CommentData> marker) {
         if(marker!= null) {
             for(CommentData object: marker) {
-                Log.w(TAG,"removed comment author " + object.getAuthor() + " with cid " + object.getCid());
+                Log.d(TAG,"removed comment author " + object.getAuthor() + " with cid " + object.getCid());
                 oCommentAdapter.remove(object);
             }
             oCommentAdapter.notifyDataSetChanged();

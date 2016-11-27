@@ -72,8 +72,9 @@ public class MainPage extends AppCompatActivity {
 
     }
 
-
-    //get json data from server
+    /**
+     * Used to get json data from server
+     */
     class asyncGET extends AsyncTask<String, String, JSONObject> {
 
         JSONParser jsonParser = new JSONParser();
@@ -137,7 +138,6 @@ public class MainPage extends AppCompatActivity {
                     JSONObject data = json.getJSONObject("data");
                     JSONArray posts = data.getJSONArray("children");
 
-                    //Log.w("test code","length is " + posts.length());
                     int postLength = posts.length();
                     for(int i = 0; i < postLength; i++)
                     {
@@ -195,6 +195,7 @@ public class MainPage extends AppCompatActivity {
                         //postsList.add(new PostData(title, subreddit, author, score,
                         //        num_comments, permalink, url, timeCreated, isSelf, selfText));
 
+                        //add to adapter
                         adapter.add(postsData[i]);
 
                         //displayData.setText(displayData.getText() + "\n" + title);
