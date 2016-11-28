@@ -1,6 +1,7 @@
 # RedditL
 
-Personal project, this is an app used for browsing reddit.com
+Personal project, this is an app used for browsing reddit.com.
+
 This is a work in progress, so far completed are the home page and comment page
 
 Screenshots:
@@ -13,6 +14,7 @@ You can review the following key files below:
  * [Adapter](https://github.com/ruihan-jia/redditL/tree/master/app/src/main/java/rick/redditl/adapter) - List adapters used to load the data onto screens.
  * [Helper](https://github.com/ruihan-jia/redditL/tree/master/app/src/main/java/rick/redditl/helper) - Helper functions.
  
+
 
 Functions:
 
