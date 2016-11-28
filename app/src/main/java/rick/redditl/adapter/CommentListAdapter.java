@@ -159,6 +159,7 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
             public void onClick(View v) {
                 Log.d(TAG, "Onclick show position " + position1 + ". nodenum is " + oComment.getNodeNum());
 
+                ((CommentPage)mContext).showComment(oComment.getNodeNum(), position1);
 
 
             }
@@ -172,8 +173,8 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
     /**
      * Given a position in the list adapter, find all the child comment positions
      *
-     * @param position
-     * @return ArrayList<CommentData>
+     * @param position the manipulated comment's position in the list adapter object
+     * @return ArrayList<CommentData> A list of comments that needs to be removed
      */
     public ArrayList<CommentData> findChildCommentsPos(int position) {
         int posDepth = getItem(position).getDepth();

@@ -22,6 +22,14 @@ import rick.redditl.model.PostData;
 import rick.redditl.R;
 import rick.redditl.model.PreviewImageData;
 
+/**
+ * There are two objects that stores the comments data
+ * One is the arraylist of CommentData, oComments
+ * The other is the list adapter object, accessible through oCommentAdapter
+ * The list adapter object is what is showing on the screen
+ * While the arraylist is the actual data to fall back on
+ */
+
 public class CommentPage extends AppCompatActivity {
 
     public PostData oPostData;
@@ -282,30 +290,71 @@ public class CommentPage extends AppCompatActivity {
      * Then change the comment to not hidden and show all the child comments
      * Add all the child comments to the list adapter object
      *
-     * @param nodeNum
+     * @param nodeNum the nodeNum of the comment being shown
+     * @param position the position of the comment being shown
      */
-    public void showComment(int nodeNum)
+    public void showComment(int nodeNum, int position)
     {
 
         Log.d(TAG, "show comment with num " + nodeNum);
 
+        //find and change the info in the oComments array
         CommentData temp = findComment(oComments, nodeNum);
         if(temp!=null) {
             //temp.showComment();
+            insertListAdapterElements(temp, position);
         } else {
             Log.w(TAG, "no comment with nodeNum " + nodeNum + " found");
         }
 
+        //find and change the info in list adapter object
+
         oCommentAdapter.notifyDataSetChanged();
+    }
+
+    public void insertListAdapterElements(CommentData oComment, int position) {
+
+        oComment.setHidden(false);
+        Log.d(TAG, "comment shown, nodeNum: " + oComment.getNodeNum() + ", cid: " + oComment.getCid());
+        if(oComment.getReplies() != null) {
+            for(CommentData object: oComment.getReplies()) {
+                position++;
+                //for all the child comments, set to show
+                object.setGone(false);
+                oCommentAdapter.insert(object,position);
+                //do the same for all the child comments
+                position = insertListAdapterElementsHelper(object, position);
+            }
+        }
+
+    }
+
+    public int insertListAdapterElementsHelper(CommentData oComment, int position) {
+
+        //if the comment is hidden, no need to show the child comments
+        if(!oComment.getHidden()){
+            if(oComment.getReplies() != null) {
+                for(CommentData object: oComment.getReplies()) {
+                    //if the current comment being manipulated (and not hidden) has child comments, show them
+                    position++;
+                    object.setGone(false);
+                    oCommentAdapter.insert(object,position);
+                    position = insertListAdapterElementsHelper(object, position);
+
+                }
+            }
+        }
+
+        return position;
     }
 
 
     /**
      * Given a nodeNum, find and return the object it belongs to recursively
      *
-     * @param mComments
-     * @param nodeNum
-     * @return
+     * @param mComments arraylist of all the comments to find
+     * @param nodeNum the nodeNum of the comment that need to be found
+     * @return the CommentData object found. if not found, return null
      */
     public CommentData findComment(ArrayList<CommentData> mComments, int nodeNum) {
         int cLen = mComments.size();
@@ -334,7 +383,7 @@ public class CommentPage extends AppCompatActivity {
     /**
      * Given a list of CommentData objects, remove them from the list adapter object.
      *
-     * @param marker
+     * @param marker A list a comments that needs to be removed from the list adapter object
      */
     public void removeListAdapterElements(ArrayList<CommentData> marker) {
         if(marker!= null) {

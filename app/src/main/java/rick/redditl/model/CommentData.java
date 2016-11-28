@@ -127,6 +127,14 @@ public class CommentData {
         replies = repliesIn;
     }
 
+    public void setHidden(Boolean hiddenIn) {
+        hidden = hiddenIn;
+    }
+
+    public void setGone(Boolean goneIn) {
+        gone = goneIn;
+    }
+
     /**
      * Set the comment to hidden, and set all the comments below it to gone
      */
@@ -155,24 +163,38 @@ public class CommentData {
         }
     }
 
+    /**
+     * Set the current comment to non-hidden, and show all the child comments
+     */
     public void showComment() {
         hidden = false;
         Log.d(TAG, "comment shown, nodeNum: " + nodeNum + ", cid: " + cid);
         if(replies != null) {
             for(CommentData object: replies) {
-                if(object.getGone())
+                //for all the child comments, set to show
+                object.setGone(false);
+                //do the same for all the child comments
                 showCommentHelper(object);
             }
         }
     }
 
+    /**
+     * Takes a comment, if it is not hidden, then show all of its child comments
+     * Then calls itself to do the same for its child comments
+     *
+     * @param input the comment that needs to be manipulated
+     */
     public void showCommentHelper (CommentData input) {
-        if(input.gone == true)
-        input.gone = true;
         //Log.d(TAG, "comment gone, nodeNum: " + nodeNum + ", cid: " + cid);
-        if(input.replies != null) {
-            for(CommentData object: input.replies) {
-                showCommentHelper(object);
+        //if the comment is hidden, no need to show the child comments
+        if(!input.getHidden()){
+            if(input.replies != null) {
+                for(CommentData object: input.replies) {
+                    //if the current comment being manipulated (and not hidden) has child comments, show them
+                    object.setGone(false);
+                    showCommentHelper(object);
+                }
             }
         }
     }

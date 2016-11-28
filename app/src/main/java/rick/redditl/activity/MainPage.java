@@ -68,7 +68,7 @@ public class MainPage extends AppCompatActivity {
 
     //useless
     public void onClickTitle (View v) {
-        Log.w(TAG,"clicked");
+        Log.d(TAG,"clicked");
 
     }
 
@@ -184,7 +184,7 @@ public class MainPage extends AppCompatActivity {
                                 tempImages[j] = new PreviewImageData((String) imageResolutionData.getString("url"),
                                         (int) imageResolutionData.getInt("width"), (int) imageResolutionData.getInt("height"));
 
-                                Log.w(TAG,"loop is " + j + " with resolution url " + imageResolutionData.getString("url"));
+                                Log.d(TAG,"loop is " + j + " with resolution url " + imageResolutionData.getString("url"));
 
 
                             }
