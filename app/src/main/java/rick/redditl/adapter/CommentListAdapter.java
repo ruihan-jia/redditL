@@ -158,10 +158,8 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "Onclick show position " + position1 + ". nodenum is " + oComment.getNodeNum());
-
+                //show the comment
                 ((CommentPage)mContext).showComment(oComment.getNodeNum(), position1);
-
-
             }
         });
 
@@ -190,11 +188,9 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
             }
             else
                 cont = false;
-
         }
 
         return marker;
-
     }
 
 /*

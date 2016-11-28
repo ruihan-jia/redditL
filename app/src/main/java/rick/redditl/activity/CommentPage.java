@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import rick.redditl.adapter.CommentListAdapter;
+import rick.redditl.helper.ParserHelper;
 import rick.redditl.model.CommentData;
 import rick.redditl.helper.JSONParser;
 import rick.redditl.model.PostData;
@@ -23,9 +24,13 @@ import rick.redditl.R;
 import rick.redditl.model.PreviewImageData;
 
 /**
+ * There is one object that stores the post data to be displayed at top
+ * Using oPostData
+ *
  * There are two objects that stores the comments data
  * One is the arraylist of CommentData, oComments
  * The other is the list adapter object, accessible through oCommentAdapter
+ *
  * The list adapter object is what is showing on the screen
  * While the arraylist is the actual data to fall back on
  */
@@ -125,50 +130,11 @@ public class CommentPage extends AppCompatActivity {
                     JSONObject jsonPostData = postNcomment.getJSONObject(0).getJSONObject("data").getJSONArray("children").getJSONObject(0).getJSONObject("data");
                     JSONArray jsonComments = postNcomment.getJSONObject(1).getJSONObject("data").getJSONArray("children");
 
-                    //=============BEGIN parsing data for post========================
-                    //getting all the post data
-                    String title = jsonPostData.getString("title");
-                    String subreddit = jsonPostData.getString("subreddit");
-                    String author = jsonPostData.getString("author");
-                    int score = jsonPostData.getInt("score");
-                    int num_comments = jsonPostData.getInt("num_comments");
-                    String permalink = jsonPostData.getString("permalink");
-                    String url = jsonPostData.getString("url");
-                    long timeCreated = jsonPostData.getInt("created_utc");
-                    Boolean isSelf = jsonPostData.getBoolean("is_self");
-                    String selfText = jsonPostData.getString("selftext");
-                    String domain = jsonPostData.getString("domain");
-                    //creating the actual item in the list
-                    oPostData = new PostData(title, subreddit, author, score,
-                            num_comments, permalink, url, timeCreated, isSelf, selfText, domain);
-
-                    //if has preview
-                    if (jsonPostData.has("preview")) {
-                        //getting preview images for the post
-                        JSONObject previewData = jsonPostData.getJSONObject("preview").getJSONArray("images").getJSONObject(0);
-                        JSONObject previewSource = previewData.getJSONObject("source");
-                        PreviewImageData tempImage = new PreviewImageData((String) previewSource.getString("url"),
-                                (int) previewSource.getInt("width"), (int) previewSource.getInt("height"));
-                        //setting preview images for the item in the list
-                        oPostData.setPreviewSource(tempImage);
-                        //getting preview image resolutions
-                        JSONArray previewResolutions = previewData.getJSONArray("resolutions");
-                        int resolutionNum = previewResolutions.length();
-                        PreviewImageData tempImages[] = new PreviewImageData[resolutionNum];
-                        for (int j = 0; j < resolutionNum; j++) {
-                            JSONObject imageResolutionData = previewResolutions.getJSONObject(j);
-                            tempImages[j] = new PreviewImageData((String) imageResolutionData.getString("url"),
-                                    (int) imageResolutionData.getInt("width"), (int) imageResolutionData.getInt("height"));
-                        }
-                        oPostData.setPreviewImagesRes(tempImages);
-                    }
-
-                    //=============END parsing data for post========================
+                    //parse the JSON object for post into PostData object
+                    oPostData = ParserHelper.parsePostData(jsonPostData);
 
 
                     //=============BEGIN parsing data for comments========================
-
-                    Log.d(TAG,"parsing comment data");
 
                     nodeNum = 0;
                     parseComments(jsonComments, 0);
@@ -253,7 +219,6 @@ public class CommentPage extends AppCompatActivity {
 
             }
 
-            findNumNonGone();
             oCommentAdapter.notifyDataSetChanged();
 
         } catch (JSONException e) {
@@ -321,7 +286,7 @@ public class CommentPage extends AppCompatActivity {
                 position++;
                 //for all the child comments, set to show
                 object.setGone(false);
-                oCommentAdapter.insert(object,position);
+                oCommentAdapter.insert(object, position);
                 //do the same for all the child comments
                 position = insertListAdapterElementsHelper(object, position);
             }
@@ -395,25 +360,6 @@ public class CommentPage extends AppCompatActivity {
         }
     }
 
-
-    public void findNumNonGone() {
-        numNonGone = 0;
-        findNumNonGoneHelper(oComments);
-    }
-
-    public int getNumNonGone() {
-        return numNonGone;
-    }
-
-    public void findNumNonGoneHelper(ArrayList<CommentData> mComments) {
-        for(CommentData object: mComments) {
-            if(!object.getGone())
-                numNonGone++;
-            if(object.getReplies()!=null) {
-                findNumNonGoneHelper(object.getReplies());
-            }
-        }
-    }
 
 
 }

@@ -74,14 +74,14 @@ public class PostListAdapter extends ArrayAdapter<PostData> {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
 
-        Log.w(TAG,"getview called, position " + position);
+        Log.d(TAG, "getview called, position " + position);
 
         //LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         final PostData postItem = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.postview, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.listadapter_post_view, parent, false);
         }
 
 
@@ -121,14 +121,12 @@ public class PostListAdapter extends ArrayAdapter<PostData> {
         if(postItem.getPreviewSource() != null){
             if (postItem.getPreviewThumbnail() != null){
                 previewImageView.setImageBitmap(postItem.getPreviewThumbnail());
-                Log.w(TAG, "set existing image position " + position);
+                Log.d(TAG, "set existing image position " + position);
             }else{
                 new previewImageTask(previewImageView,postItem)
                         .execute(postItem.getPreviewImagesLowReso().url);
-                Log.w(TAG,"get new image position " + position);
+                Log.d(TAG,"get new image position " + position);
             }
-
-            //Log.w(TAG,"preview image position " + position);
         }
         else{
             previewImageView.setImageResource(R.mipmap.reddit_logo_img);
@@ -141,7 +139,7 @@ public class PostListAdapter extends ArrayAdapter<PostData> {
 
         } else {
             //if expanded, set it to expanded image.
-            Log.w(TAG,"image is expanded position " + position);
+            Log.d(TAG,"image is expanded position " + position);
             expandedImageView.setVisibility(View.VISIBLE);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             lp.setMargins(0, 0, 0, 0);
@@ -155,10 +153,11 @@ public class PostListAdapter extends ArrayAdapter<PostData> {
 
         //=======================set on click listeners==========================
 
+        //clicking the title text
         titleText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.w(TAG, "test position " + position);
+                Log.d(TAG, "Onclick title text, position " + position);
 
                 //open webview activity
                 openWeb(postItem.getUrl());
@@ -166,10 +165,11 @@ public class PostListAdapter extends ArrayAdapter<PostData> {
 
             }
         });
+        //clicking the image thumbnail
         previewImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.w(TAG, "test position " + position);
+                Log.d(TAG, "Onclick thumbnail, position " + position);
 
                 //if image is not expanded, expand
                 if (postItem.getImageExpanded() == false) {
@@ -183,10 +183,11 @@ public class PostListAdapter extends ArrayAdapter<PostData> {
 
             }
         });
+        //clicking expanded image
         expandedImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.w(TAG,"test position " + position);
+                Log.d(TAG,"Onclick expanded image, position " + position);
 
                 //colapse the expanded image
                 expandedImageView.setVisibility(View.GONE);
@@ -194,10 +195,11 @@ public class PostListAdapter extends ArrayAdapter<PostData> {
 
             }
         });
+        //clicking the comments
         commentsNum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.w(TAG, "test position " + position);
+                Log.d(TAG, "Onclick comments, position " + position);
 
                 //open comments activity
                 openComments(postItem.getPermalink());
@@ -237,7 +239,7 @@ public class PostListAdapter extends ArrayAdapter<PostData> {
             }
             String contentType = connection.getHeaderField("Content-Type");
             Boolean img = contentType.startsWith("image/");
-            Log.w(TAG,"img is " + img);
+            Log.d(TAG,"img is " + img);
 
             if(img) {
                 try {
@@ -254,11 +256,10 @@ public class PostListAdapter extends ArrayAdapter<PostData> {
 
         protected void onPostExecute(Bitmap result) {
             if (result != null) {
-                Log.w(TAG, "setting image");
+                Log.d(TAG, "setting image");
 
                 //set the view to image
                 bmImage.setVisibility(View.VISIBLE);
-                //Log.w(TAG, "getwidth is " + result.getWidth() + " get height is " + result.getHeight() + " screenwidth is " + screenWidth);
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 lp.setMargins(0, 0, 0, 0);
                 bmImage.setLayoutParams(lp);

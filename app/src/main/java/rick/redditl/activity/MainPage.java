@@ -21,6 +21,7 @@ import java.util.HashMap;
 
 import rick.redditl.adapter.PostListAdapter;
 import rick.redditl.helper.JSONParser;
+import rick.redditl.helper.ParserHelper;
 import rick.redditl.model.PostData;
 import rick.redditl.R;
 import rick.redditl.model.PreviewImageData;
@@ -142,63 +143,13 @@ public class MainPage extends AppCompatActivity {
                     for(int i = 0; i < postLength; i++)
                     {
                         JSONObject postNumber = posts.getJSONObject(i);
-                        JSONObject PostData = postNumber.getJSONObject("data");
+                        JSONObject postJSON = postNumber.getJSONObject("data");
 
-                        //getting all the post data
-                        String title = PostData.getString("title");
-                        String subreddit = PostData.getString("subreddit");
-                        String author = PostData.getString("author");
-                        int score = PostData.getInt("score");
-                        int num_comments = PostData.getInt("num_comments");
-                        String permalink = PostData.getString("permalink");
-                        String url = PostData.getString("url");
-                        long timeCreated = PostData.getInt("created_utc");
-                        Boolean isSelf = PostData.getBoolean("is_self");
-                        String selfText = PostData.getString("selftext");
-                        String domain = PostData.getString("domain");
-
-                        //creating the actual item in the list
-                        postsData[i] = new PostData(title, subreddit, author, score,
-                                num_comments, permalink, url, timeCreated, isSelf, selfText, domain);
-
-
-                        //if has preview
-                        if (PostData.has("preview")) {
-
-                            //getting preview images for the post
-                            JSONObject previewData = PostData.getJSONObject("preview").getJSONArray("images").getJSONObject(0);
-                            JSONObject previewSource = previewData.getJSONObject("source");
-                            PreviewImageData tempImage = new PreviewImageData((String) previewSource.getString("url"),
-                                    (int) previewSource.getInt("width"), (int) previewSource.getInt("height"));
-
-                            //setting preview images for the item in the list
-                            postsData[i].setPreviewSource(tempImage);
-
-                            //getting preview image resolutions
-                            JSONArray previewResolutions = previewData.getJSONArray("resolutions");
-                            int resolutionNum = previewResolutions.length();
-                            PreviewImageData tempImages[] = new PreviewImageData[resolutionNum];
-                            for (int j = 0; j < resolutionNum; j++) {
-                                JSONObject imageResolutionData = previewResolutions.getJSONObject(j);
-
-                                tempImages[j] = new PreviewImageData((String) imageResolutionData.getString("url"),
-                                        (int) imageResolutionData.getInt("width"), (int) imageResolutionData.getInt("height"));
-
-                                Log.d(TAG,"loop is " + j + " with resolution url " + imageResolutionData.getString("url"));
-
-
-                            }
-                            postsData[i].setPreviewImagesRes(tempImages);
-
-                        }
-
-                        //postsList.add(new PostData(title, subreddit, author, score,
-                        //        num_comments, permalink, url, timeCreated, isSelf, selfText));
+                        //parse the JSON object and pass back a PostData object
+                        postsData[i] = ParserHelper.parsePostData(postJSON);
 
                         //add to adapter
                         adapter.add(postsData[i]);
-
-                        //displayData.setText(displayData.getText() + "\n" + title);
 
 
                     }
