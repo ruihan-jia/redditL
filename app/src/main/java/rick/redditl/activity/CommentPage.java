@@ -2,11 +2,24 @@ package rick.redditl.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,7 +29,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import rick.redditl.adapter.CommentListAdapter;
+import rick.redditl.adapter.PostListAdapter;
+import rick.redditl.helper.GeneralHelper;
 import rick.redditl.helper.ParserHelper;
+import rick.redditl.helper.TimeHelper;
 import rick.redditl.model.CommentData;
 import rick.redditl.helper.JSONParser;
 import rick.redditl.model.PostData;
@@ -44,6 +60,17 @@ public class CommentPage extends AppCompatActivity {
     int nodeNum = 0;
     int numNonGone = 0;
 
+    //elements for header of listview
+    TextView score;
+    TextView titleText;
+    TextView commentsNum;
+    TextView authorNsubreddit;
+    ImageView previewImageView;
+    ImageView expandedImageView;
+
+    View header;
+
+
     public String TAG = "CommentPage";
 
 
@@ -57,14 +84,29 @@ public class CommentPage extends AppCompatActivity {
         oCommentAdapter = new CommentListAdapter(this, oComments);
 
         commentListView = (ListView) findViewById(R.id.commentListView);
-        commentListView.setAdapter(oCommentAdapter);
+
+        header = getLayoutInflater().inflate(R.layout.listadapter_comment_post_header, commentListView, false);
+
+        //commentListView.addHeaderView(header, null, false);
+
+        //commentListView.setAdapter(oCommentAdapter);
+
+
+        //getting all the elements
+        score = (TextView) header.findViewById(R.id.score);
+        titleText = (TextView) header.findViewById(R.id.title);
+        commentsNum = (TextView) header.findViewById(R.id.num_comments);
+        authorNsubreddit = (TextView) header.findViewById(R.id.authorNsubreddit);
+        previewImageView = (ImageView) header.findViewById(R.id.previewImage);
+        //final ImageView expandedImageView = (ImageView) header.findViewById(R.id.expandedImage);
+        expandedImageView = (ImageView) header.findViewById(R.id.expandedImage);
 
 
         Intent intent = getIntent();
         String url = intent.getStringExtra("URL");
 
 
-        url = "https://www.reddit.com" + url + ".json";
+        url = "https://www.reddit.com" + url + ".json?raw_json=1";
 
 
 
@@ -132,6 +174,68 @@ public class CommentPage extends AppCompatActivity {
 
                     //parse the JSON object for post into PostData object
                     oPostData = ParserHelper.parsePostData(jsonPostData);
+
+                    commentListView.addHeaderView(header, null, false);
+                    commentListView.setAdapter(oCommentAdapter);
+
+
+                    GeneralHelper.setPostDataToView(oPostData,score, titleText, commentsNum, authorNsubreddit, previewImageView, expandedImageView);
+
+                    /*
+                    //====================setting all the elements=======================
+
+                    //title and domain
+                    String titleNdomain = oPostData.getTitle() + " (" + oPostData.getDomain() + ")";
+                    SpannableString spanString =  new SpannableString(titleNdomain);
+                    spanString.setSpan(new RelativeSizeSpan(0.75f), titleNdomain.length() - (oPostData.getDomain().length() + 2),titleNdomain.length(), 0); // set size
+                    spanString.setSpan(new ForegroundColorSpan(Color.GRAY), titleNdomain.length() - (oPostData.getDomain().length() + 2), titleNdomain.length(), 0);// set color
+                    titleText.setText(spanString);
+                    //number of comments
+                    //commentsNum.setText(Integer.toString(oPostData.getNum_comments()) + " comments");
+                    //score, if greater than 9999, change size
+                    score.setText(GeneralHelper.convertIntToStringK(oPostData.getScore()));
+                    //time since post
+                    //this time is given in seconds, not milliseconds.
+                    String ago = TimeHelper.timeSincePost(oPostData.getTimeCreated());
+
+                    //author and subreddit
+                    String authorNsubredditText = ago + " ago by " + oPostData.getAuthor() + " to /r/" + oPostData.getSubreddit();
+                    spanString =  new SpannableString(authorNsubredditText);
+                    spanString.setSpan(new ForegroundColorSpan(Color.BLACK), ago.length() + 8, ago.length() + 8 + oPostData.getAuthor().length(), 0);// set color
+                    spanString.setSpan(new ForegroundColorSpan(Color.BLACK), authorNsubredditText.length() - (oPostData.getSubreddit().length() + 3), authorNsubredditText.length(), 0);// set color
+                    authorNsubreddit.setText(spanString);
+
+
+                    //preview image
+                    if(oPostData.getPreviewSource() != null){
+                        if (oPostData.getPreviewThumbnail() != null){
+                            previewImageView.setImageBitmap(oPostData.getPreviewThumbnail());
+                        }else{
+                            //new PostListAdapter.previewImageTask(previewImageView,oPostData).execute(oPostData.getPreviewImagesLowReso().url);
+                        }
+                    }
+                    else{
+                        previewImageView.setImageResource(R.mipmap.reddit_logo_img);
+                    }
+
+                    //expanded image
+                    if(oPostData.getImageExpanded() == false) {
+                        //make the image disappear
+                        expandedImageView.setVisibility(View.GONE);
+
+                    } else {
+                        //if expanded, set it to expanded image.
+                        expandedImageView.setVisibility(View.VISIBLE);
+                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        lp.setMargins(0, 0, 0, 0);
+                        expandedImageView.setLayoutParams(lp);
+
+                        double heightD = postItem.getExpandedImage().getHeight()*(double)screenWidth/(double)postItem.getExpandedImage().getWidth();
+                        expandedImageView.setImageBitmap(Bitmap.createScaledBitmap(postItem.getExpandedImage(), screenWidth, (int) heightD, false));
+
+                    }
+                    */
+
 
 
                     //=============BEGIN parsing data for comments========================

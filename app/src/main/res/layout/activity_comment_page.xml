@@ -23,6 +23,9 @@
         android:textSize="25dp"
         android:text="redditL" />
 
+
+
+
     <ListView
         android:id="@+id/commentListView"
         android:layout_width="fill_parent"
@@ -35,6 +38,9 @@
         android:divider="#CCCCCC"
         android:dividerHeight="0dp" >
     </ListView>
+
+
+
 
 
 </RelativeLayout>

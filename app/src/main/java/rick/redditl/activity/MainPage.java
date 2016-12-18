@@ -1,13 +1,17 @@
 package rick.redditl.activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -19,6 +23,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import rick.redditl.Constants;
 import rick.redditl.adapter.PostListAdapter;
 import rick.redditl.helper.JSONParser;
 import rick.redditl.helper.ParserHelper;
@@ -46,6 +51,16 @@ public class MainPage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
+
+
+        //set the screen height and width for later use
+        WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        Constants.screenWidth = size.x;
+        Constants.screenHeight = size.y;
+
 
         //displayData = (TextView) findViewById(R.id.displayData);
         mainListView = (ListView) findViewById(R.id.mainListView);

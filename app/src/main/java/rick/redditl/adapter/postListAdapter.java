@@ -27,6 +27,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
+import rick.redditl.helper.GeneralHelper;
 import rick.redditl.model.PostData;
 import rick.redditl.R;
 import rick.redditl.activity.CommentPage;
@@ -94,6 +95,9 @@ public class PostListAdapter extends ArrayAdapter<PostData> {
         final ImageView expandedImageView = (ImageView) convertView.findViewById(R.id.expandedImage);
 
 
+        GeneralHelper.setPostDataToView(postItem,score, titleText, commentsNum, authorNsubreddit, previewImageView, expandedImageView);
+
+        /*
         //====================setting all the elements=======================
 
         //title and domain
@@ -104,8 +108,8 @@ public class PostListAdapter extends ArrayAdapter<PostData> {
         titleText.setText(spanString);
         //number of comments
         commentsNum.setText(Integer.toString(postItem.getNum_comments()) + " comments");
-        //score
-        score.setText(Integer.toString(postItem.getScore()));
+        //score, if greater than 9999, change size
+        score.setText(GeneralHelper.convertIntToStringK(postItem.getScore()));
         //time since post
         //this time is given in seconds, not milliseconds.
         String ago = TimeHelper.timeSincePost(postItem.getTimeCreated());
@@ -149,6 +153,7 @@ public class PostListAdapter extends ArrayAdapter<PostData> {
             expandedImageView.setImageBitmap(Bitmap.createScaledBitmap(postItem.getExpandedImage(), screenWidth, (int)heightD, false));
 
         }
+        */
 
 
         //=======================set on click listeners==========================
