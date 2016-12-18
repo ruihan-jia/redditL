@@ -18,6 +18,7 @@
         android:layout_height="match_parent"
         android:layout_weight="0"
         android:layout_marginLeft="0dp"
+        android:layout_marginBottom="0dp"
         android:orientation="vertical"
         android:layout_gravity="left">
 
@@ -56,6 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:textSize="14dp"
+                android:background="@drawable/selector_hide_button"
                 android:text="author" />
 
             <TextView
@@ -94,6 +96,8 @@
                 android:id="@+id/upvote"
                 android:layout_width="40dp"
                 android:layout_height="35dp"
+                android:layout_margin="0dp"
+                android:background="@drawable/selector_hide_button"
                 android:textSize="10dp"
                 android:text="up"/>
 
@@ -102,6 +106,8 @@
                 android:id="@+id/downvote"
                 android:layout_width="40dp"
                 android:layout_height="35dp"
+                android:layout_margin="0dp"
+                android:background="@drawable/selector_hide_button"
                 android:textSize="10dp"
                 android:text="do"/>
 
@@ -112,6 +118,8 @@
                 android:id="@+id/permalink"
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
+                android:layout_margin="0dp"
+                android:background="@drawable/selector_hide_button"
                 android:textSize="10dp"
                 android:text="permalink"/>
 
@@ -120,12 +128,16 @@
                 android:id="@+id/parent"
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
+                android:layout_margin="0dp"
+                android:background="@drawable/selector_hide_button"
                 android:textSize="10dp"
                 android:text="parents"/>
 
 
 
         </LinearLayout>
+
+
 
 
     </LinearLayout>

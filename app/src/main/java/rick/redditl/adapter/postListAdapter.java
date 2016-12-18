@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -28,6 +29,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 
 import rick.redditl.helper.GeneralHelper;
+import rick.redditl.helper.PostHelper;
 import rick.redditl.model.PostData;
 import rick.redditl.R;
 import rick.redditl.activity.CommentPage;
@@ -89,72 +91,13 @@ public class PostListAdapter extends ArrayAdapter<PostData> {
         //getting all the elements
         TextView score = (TextView) convertView.findViewById(R.id.score);
         TextView titleText = (TextView) convertView.findViewById(R.id.title);
-        TextView commentsNum = (TextView) convertView.findViewById(R.id.num_comments);
+        Button commentsNum = (Button) convertView.findViewById(R.id.num_comments);
         TextView authorNsubreddit = (TextView) convertView.findViewById(R.id.authorNsubreddit);
         ImageView previewImageView = (ImageView) convertView.findViewById(R.id.previewImage);
         final ImageView expandedImageView = (ImageView) convertView.findViewById(R.id.expandedImage);
 
-
-        GeneralHelper.setPostDataToView(postItem,score, titleText, commentsNum, authorNsubreddit, previewImageView, expandedImageView);
-
-        /*
-        //====================setting all the elements=======================
-
-        //title and domain
-        String titleNdomain = postItem.getTitle() + " (" + postItem.getDomain() + ")";
-        SpannableString spanString =  new SpannableString(titleNdomain);
-        spanString.setSpan(new RelativeSizeSpan(0.75f), titleNdomain.length() - (postItem.getDomain().length() + 2),titleNdomain.length(), 0); // set size
-        spanString.setSpan(new ForegroundColorSpan(Color.GRAY), titleNdomain.length() - (postItem.getDomain().length() + 2), titleNdomain.length(), 0);// set color
-        titleText.setText(spanString);
-        //number of comments
-        commentsNum.setText(Integer.toString(postItem.getNum_comments()) + " comments");
-        //score, if greater than 9999, change size
-        score.setText(GeneralHelper.convertIntToStringK(postItem.getScore()));
-        //time since post
-        //this time is given in seconds, not milliseconds.
-        String ago = TimeHelper.timeSincePost(postItem.getTimeCreated());
-
-        //author and subreddit
-        String authorNsubredditText = ago + " ago by " + postItem.getAuthor() + " to /r/" + postItem.getSubreddit();
-        spanString =  new SpannableString(authorNsubredditText);
-        spanString.setSpan(new ForegroundColorSpan(Color.BLACK), ago.length() + 8, ago.length() + 8 + postItem.getAuthor().length(), 0);// set color
-        spanString.setSpan(new ForegroundColorSpan(Color.BLACK), authorNsubredditText.length() - (postItem.getSubreddit().length() + 3), authorNsubredditText.length(), 0);// set color
-        authorNsubreddit.setText(spanString);
-
-        //preview image
-        if(postItem.getPreviewSource() != null){
-            if (postItem.getPreviewThumbnail() != null){
-                previewImageView.setImageBitmap(postItem.getPreviewThumbnail());
-                Log.d(TAG, "set existing image position " + position);
-            }else{
-                new previewImageTask(previewImageView,postItem)
-                        .execute(postItem.getPreviewImagesLowReso().url);
-                Log.d(TAG,"get new image position " + position);
-            }
-        }
-        else{
-            previewImageView.setImageResource(R.mipmap.reddit_logo_img);
-        }
-
-        //expanded image
-        if(postItem.getImageExpanded() == false) {
-            //make the image disappear
-            expandedImageView.setVisibility(View.GONE);
-
-        } else {
-            //if expanded, set it to expanded image.
-            Log.d(TAG,"image is expanded position " + position);
-            expandedImageView.setVisibility(View.VISIBLE);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            lp.setMargins(0, 0, 0, 0);
-            expandedImageView.setLayoutParams(lp);
-
-            double heightD = postItem.getExpandedImage().getHeight()*(double)screenWidth/(double)postItem.getExpandedImage().getWidth();
-            expandedImageView.setImageBitmap(Bitmap.createScaledBitmap(postItem.getExpandedImage(), screenWidth, (int)heightD, false));
-
-        }
-        */
-
+        //set the post data to elements
+        PostHelper.setPostDataToView(postItem, score, titleText, commentsNum, authorNsubreddit, previewImageView, expandedImageView);
 
         //=======================set on click listeners==========================
 
@@ -165,7 +108,8 @@ public class PostListAdapter extends ArrayAdapter<PostData> {
                 Log.d(TAG, "Onclick title text, position " + position);
 
                 //open webview activity
-                openWeb(postItem.getUrl());
+                //openWeb(postItem.getUrl());
+                PostHelper.openWeb(postItem.getUrl(), context);
 
 
             }
@@ -178,7 +122,9 @@ public class PostListAdapter extends ArrayAdapter<PostData> {
 
                 //if image is not expanded, expand
                 if (postItem.getImageExpanded() == false) {
-                    new checkUrl(expandedImageView,postItem)
+                    /*new checkUrl(expandedImageView,postItem)
+                            .execute(postItem.getUrl());*/
+                    new PostHelper.checkUrl(expandedImageView,postItem, context)
                             .execute(postItem.getUrl());
                 } else {
                     //else collpase iamge
@@ -306,41 +252,6 @@ public class PostListAdapter extends ArrayAdapter<PostData> {
         intent.putExtra("URL", urlIn);
         context.startActivity(intent);
     }
-
-    /**
-     * Get the preview image from server
-     * From
-     * http://stackoverflow.com/questions/2471935/how-to-load-an-imageview-by-url-in-android
-     */
-    public class previewImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-        PostData post;
-
-        public previewImageTask(ImageView bmImage, PostData postIn) {
-            this.bmImage = bmImage;
-            post = postIn;
-            bmImage.setImageResource(R.mipmap.reddit_logo_img);
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-            post.setPreviewThumbnail(result);
-        }
-    }
-
 
 
 

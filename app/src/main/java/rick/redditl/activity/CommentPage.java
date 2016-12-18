@@ -1,6 +1,7 @@
 package rick.redditl.activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -32,6 +34,7 @@ import rick.redditl.adapter.CommentListAdapter;
 import rick.redditl.adapter.PostListAdapter;
 import rick.redditl.helper.GeneralHelper;
 import rick.redditl.helper.ParserHelper;
+import rick.redditl.helper.PostHelper;
 import rick.redditl.helper.TimeHelper;
 import rick.redditl.model.CommentData;
 import rick.redditl.helper.JSONParser;
@@ -63,12 +66,15 @@ public class CommentPage extends AppCompatActivity {
     //elements for header of listview
     TextView score;
     TextView titleText;
-    TextView commentsNum;
+    Button commentsNum;
+    TextView commentsNum1;
     TextView authorNsubreddit;
     ImageView previewImageView;
     ImageView expandedImageView;
 
     View header;
+
+    Context context;
 
 
     public String TAG = "CommentPage";
@@ -78,6 +84,8 @@ public class CommentPage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comment_page);
+
+        context = this;
 
 
         oComments = new ArrayList<CommentData>();
@@ -95,7 +103,8 @@ public class CommentPage extends AppCompatActivity {
         //getting all the elements
         score = (TextView) header.findViewById(R.id.score);
         titleText = (TextView) header.findViewById(R.id.title);
-        commentsNum = (TextView) header.findViewById(R.id.num_comments);
+        commentsNum = (Button) header.findViewById(R.id.num_comments);
+        commentsNum1 = (TextView) header.findViewById(R.id.num_comments1);
         authorNsubreddit = (TextView) header.findViewById(R.id.authorNsubreddit);
         previewImageView = (ImageView) header.findViewById(R.id.previewImage);
         //final ImageView expandedImageView = (ImageView) header.findViewById(R.id.expandedImage);
@@ -111,6 +120,54 @@ public class CommentPage extends AppCompatActivity {
 
 
         new asyncGET().execute(url);
+
+
+
+
+        //clicking the title text
+        titleText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //open webview activity
+                //openWeb(oPostData.getUrl());
+
+                PostHelper.openWeb(oPostData.getUrl(), context);
+
+
+
+            }
+        });
+        //clicking the image thumbnail
+        previewImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //if image is not expanded, expand
+                if (oPostData.getImageExpanded() == false) {
+                    new PostHelper.checkUrl(expandedImageView,oPostData, context)
+                            .execute(oPostData.getUrl());
+                } else {
+                    //else collpase iamge
+                    expandedImageView.setVisibility(View.GONE);
+                    oPostData.setImageExpanded(false);
+                }
+
+            }
+        });
+        //clicking expanded image
+        expandedImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //colapse the expanded image
+                expandedImageView.setVisibility(View.GONE);
+                oPostData.setImageExpanded(false);
+
+            }
+        });
+
+
 
     }
 
@@ -178,64 +235,10 @@ public class CommentPage extends AppCompatActivity {
                     commentListView.addHeaderView(header, null, false);
                     commentListView.setAdapter(oCommentAdapter);
 
-
-                    GeneralHelper.setPostDataToView(oPostData,score, titleText, commentsNum, authorNsubreddit, previewImageView, expandedImageView);
-
-                    /*
-                    //====================setting all the elements=======================
-
-                    //title and domain
-                    String titleNdomain = oPostData.getTitle() + " (" + oPostData.getDomain() + ")";
-                    SpannableString spanString =  new SpannableString(titleNdomain);
-                    spanString.setSpan(new RelativeSizeSpan(0.75f), titleNdomain.length() - (oPostData.getDomain().length() + 2),titleNdomain.length(), 0); // set size
-                    spanString.setSpan(new ForegroundColorSpan(Color.GRAY), titleNdomain.length() - (oPostData.getDomain().length() + 2), titleNdomain.length(), 0);// set color
-                    titleText.setText(spanString);
-                    //number of comments
-                    //commentsNum.setText(Integer.toString(oPostData.getNum_comments()) + " comments");
-                    //score, if greater than 9999, change size
-                    score.setText(GeneralHelper.convertIntToStringK(oPostData.getScore()));
-                    //time since post
-                    //this time is given in seconds, not milliseconds.
-                    String ago = TimeHelper.timeSincePost(oPostData.getTimeCreated());
-
-                    //author and subreddit
-                    String authorNsubredditText = ago + " ago by " + oPostData.getAuthor() + " to /r/" + oPostData.getSubreddit();
-                    spanString =  new SpannableString(authorNsubredditText);
-                    spanString.setSpan(new ForegroundColorSpan(Color.BLACK), ago.length() + 8, ago.length() + 8 + oPostData.getAuthor().length(), 0);// set color
-                    spanString.setSpan(new ForegroundColorSpan(Color.BLACK), authorNsubredditText.length() - (oPostData.getSubreddit().length() + 3), authorNsubredditText.length(), 0);// set color
-                    authorNsubreddit.setText(spanString);
-
-
-                    //preview image
-                    if(oPostData.getPreviewSource() != null){
-                        if (oPostData.getPreviewThumbnail() != null){
-                            previewImageView.setImageBitmap(oPostData.getPreviewThumbnail());
-                        }else{
-                            //new PostListAdapter.previewImageTask(previewImageView,oPostData).execute(oPostData.getPreviewImagesLowReso().url);
-                        }
-                    }
-                    else{
-                        previewImageView.setImageResource(R.mipmap.reddit_logo_img);
-                    }
-
-                    //expanded image
-                    if(oPostData.getImageExpanded() == false) {
-                        //make the image disappear
-                        expandedImageView.setVisibility(View.GONE);
-
-                    } else {
-                        //if expanded, set it to expanded image.
-                        expandedImageView.setVisibility(View.VISIBLE);
-                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                        lp.setMargins(0, 0, 0, 0);
-                        expandedImageView.setLayoutParams(lp);
-
-                        double heightD = postItem.getExpandedImage().getHeight()*(double)screenWidth/(double)postItem.getExpandedImage().getWidth();
-                        expandedImageView.setImageBitmap(Bitmap.createScaledBitmap(postItem.getExpandedImage(), screenWidth, (int) heightD, false));
-
-                    }
-                    */
-
+                    //setting all the elements
+                    PostHelper.setPostDataToView(oPostData,score, titleText, commentsNum, authorNsubreddit, previewImageView, expandedImageView);
+                    //set textview comment
+                    commentsNum1.setText(Integer.toString(oPostData.getNum_comments()) + " comments");
 
 
                     //=============BEGIN parsing data for comments========================
@@ -463,6 +466,8 @@ public class CommentPage extends AppCompatActivity {
             oCommentAdapter.notifyDataSetChanged();
         }
     }
+
+
 
 
 

@@ -7,7 +7,7 @@
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_weight="0"
         android:layout_gravity="left">
@@ -92,7 +92,7 @@
                 android:id="@+id/previewImage"
                 android:layout_width="70dp"
                 android:layout_height="match_parent"
-                android:background="@color/white"
+                android:background="@drawable/selector_hide_button"
                 android:layout_marginTop="5dp"
                 android:layout_gravity="right"
                 android:onClick="onClickTitle"
@@ -119,45 +119,54 @@
         android:layout_marginBottom="5dp">
 
 
-        <TextView
+        <Button
             android:id="@+id/share"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="5dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
             android:layout_weight="1"
+            android:background="@drawable/selector_hide_button"
+            android:minHeight="30dip"
             android:textColor="@color/black"
             android:text="share" />
 
-        <TextView
+        <Button
             android:id="@+id/save"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
+            android:layout_marginRight="0dp"
             android:layout_weight="1"
+            android:background="@drawable/selector_hide_button"
+            android:minHeight="30dip"
             android:textColor="@color/black"
             android:text="save" />
 
-        <TextView
+        <Button
             android:id="@+id/moreOptions"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
+            android:layout_marginRight="0dp"
             android:layout_weight="1"
+            android:background="@drawable/selector_hide_button"
+            android:minHeight="30dip"
             android:textColor="@color/black"
             android:text="..." />
 
 
 
 
-        <TextView
+        <Button
             android:id="@+id/num_comments"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:layout_marginRight="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:textColor="@color/black"
+            android:background="@drawable/selector_hide_button"
+            android:minHeight="30dip"
             android:text="0000 comments"
             android:layout_weight="0"/>
     </LinearLayout>

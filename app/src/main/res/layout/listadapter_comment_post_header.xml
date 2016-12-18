@@ -7,7 +7,7 @@
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_weight="0"
         android:layout_gravity="left">
@@ -110,6 +110,139 @@
         android:layout_height="0dp"
         android:background="@color/black"/>
 
+
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp">
+
+
+        <Button
+            android:id="@+id/share"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/selector_hide_button"
+            android:minHeight="20dip"
+            android:textColor="@color/black"
+            android:text="share" />
+
+        <Button
+            android:id="@+id/save"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/selector_hide_button"
+            android:minHeight="20dip"
+            android:textColor="@color/black"
+            android:text="save" />
+
+        <Button
+            android:id="@+id/moreOptions"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/selector_hide_button"
+            android:minHeight="20dip"
+            android:textColor="@color/black"
+            android:text="..." />
+
+
+
+
+        <Button
+            android:id="@+id/num_comments"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/black"
+            android:background="@drawable/selector_hide_button"
+            android:minHeight="20dip"
+            android:text="comments"
+            android:layout_weight="0"/>
+    </LinearLayout>
+
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal"
+        android:background="@color/silver"
+        android:layout_marginBottom="5dp">
+
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/silver"
+            android:layout_weight="1"
+            android:layout_gravity="left">
+
+
+            <TextView
+                android:id="@+id/num_comments1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/black"
+                android:text="0000 comments"
+                android:textSize="15dp"/>
+
+            <TextView
+                android:id="@+id/sorted"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginRight="0dp"
+                android:textColor="@color/black"
+                android:text="sorted by: top" />
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/sortedOptions"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:gravity="center_vertical"
+            android:layout_weight="0"
+            android:textColor="@color/black"
+            android:textSize="30dp"
+            android:text="*" />
+
+
+
+
+        <TextView
+            android:id="@+id/replyToPost"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="right|center_vertical"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:textColor="@color/black"
+            android:text="Reply"
+            android:textSize="20dp"
+            android:layout_weight="0"/>
+    </LinearLayout>
 
 
 
