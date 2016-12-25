@@ -1,9 +1,15 @@
-package rick.redditl.adapter;
+package rick.redditl.adapters;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.text.Html;
+import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.text.style.StyleSpan;
+import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,11 +20,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-import rick.redditl.activity.CommentPage;
-import rick.redditl.model.CommentData;
+import rick.redditl.activities.CommentPage;
+import rick.redditl.helper.CommentHelper;
+import rick.redditl.models.CommentData;
 import rick.redditl.R;
 import rick.redditl.helper.TimeHelper;
 
@@ -104,7 +110,8 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
                     spanString.setSpan(new StyleSpan(Typeface.BOLD), 0, Integer.toString(oComment.getScore()).length() + 7, 0); // set bold
                     scoreNtimeTV.setText(spanString);
 
-                    bodyTV.setText(oComment.getContent());
+                    //bodyTV.setText(oComment.getContent());
+                    setTextViewHTML(bodyTV,oComment.getContentHtml());
 
                 }
             } else {
@@ -167,6 +174,43 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
 
         return convertView;
     }
+
+    protected void makeLinkClickable(SpannableStringBuilder strBuilder, final URLSpan span)
+    {
+        int start = strBuilder.getSpanStart(span);
+        int end = strBuilder.getSpanEnd(span);
+        int flags = strBuilder.getSpanFlags(span);
+        ClickableSpan clickable = new ClickableSpan() {
+            public void onClick(View view) {
+                // Do something with span.getURL() to handle the link click...
+                Log.d(TAG,"test " + span.getURL());
+            }
+        };
+        strBuilder.setSpan(clickable, start, end, flags);
+        strBuilder.removeSpan(span);
+    }
+
+    //http://stackoverflow.com/questions/12418279/android-textview-with-clickable-links-how-to-capture-clicks
+    protected void setTextViewHTML(TextView text, String html)
+    {
+        //html = "<div class=\"md\"><p>[test](google.com)\n<a href=\"https://google.com\">https://google.com</a>\n<a href=\"http://i.imgur.com/AqLvXJh.gifv\">to test</a>\n[imgur](<a href=\"http://www.imgur.com\">www.imgur.com</a>)</p>\n</div>";
+        //html = "lol";
+
+
+        CharSequence sequence = Html.fromHtml(html);
+        SpannableStringBuilder strBuilder = new SpannableStringBuilder(sequence);
+        URLSpan[] urls = strBuilder.getSpans(0, sequence.length(), URLSpan.class);
+        for(URLSpan span : urls) {
+            //Log.d(TAG,"set url " + span.getURL());
+            makeLinkClickable(strBuilder, span);
+        }
+        text.setText(strBuilder);
+        text.setMovementMethod(LinkMovementMethod.getInstance());
+
+    }
+
+
+
 
     /**
      * Given a position in the list adapter, find all the child comment positions

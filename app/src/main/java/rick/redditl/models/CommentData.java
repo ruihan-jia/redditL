@@ -1,9 +1,7 @@
-package rick.redditl.model;
+package rick.redditl.models;
 import android.util.Log;
 
 import java.util.ArrayList;
-
-import rick.redditl.adapter.CommentListAdapter;
 
 /**
  * Created by Rick on 2016-10-02.
@@ -28,6 +26,7 @@ public class CommentData {
 
     //t1
     private String content;
+    private String contentHtml;
     private String author;
     private int score;
     private long timeCreated;
@@ -43,7 +42,7 @@ public class CommentData {
 
     }
 
-    public CommentData(int nodeNumIn, String kindIn, String cidIn, String parentIdIn, String contentIn, String authorIn,
+    public CommentData(int nodeNumIn, String kindIn, String cidIn, String parentIdIn, String contentIn, String contentHtmlIn, String authorIn,
                        int scoreIn,long timeCreatedIn,int depthIn) {
 
         nodeNum = nodeNumIn;
@@ -51,6 +50,7 @@ public class CommentData {
         cid = cidIn;
         parentId = parentIdIn;
         content = contentIn;
+        contentHtml = contentHtmlIn;
         author = authorIn;
         score = scoreIn;
         timeCreated = timeCreatedIn;
@@ -101,6 +101,10 @@ public class CommentData {
 
     public String getContent() {
         return content;
+    }
+
+    public String getContentHtml() {
+        return contentHtml;
     }
 
     public String getAuthor() {

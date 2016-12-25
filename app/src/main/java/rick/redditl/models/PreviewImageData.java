@@ -1,4 +1,4 @@
-package rick.redditl.model;
+package rick.redditl.models;
 
 /**
  * Created by Rick on 2016-09-21.

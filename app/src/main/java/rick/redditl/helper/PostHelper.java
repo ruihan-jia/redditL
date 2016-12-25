@@ -23,8 +23,8 @@ import java.net.URLConnection;
 
 import rick.redditl.Constants;
 import rick.redditl.R;
-import rick.redditl.activity.WebActivity;
-import rick.redditl.model.PostData;
+import rick.redditl.activities.WebActivity;
+import rick.redditl.models.PostData;
 
 /**
  * Created by Rick on 2016-12-18.

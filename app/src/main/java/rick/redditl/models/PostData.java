@@ -1,4 +1,4 @@
-package rick.redditl.model;
+package rick.redditl.models;
 
 import android.graphics.Bitmap;
 

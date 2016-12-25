@@ -1,4 +1,4 @@
-package rick.redditl.adapter;
+package rick.redditl.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,9 +7,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.AsyncTask;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -28,13 +25,11 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
-import rick.redditl.helper.GeneralHelper;
 import rick.redditl.helper.PostHelper;
-import rick.redditl.model.PostData;
+import rick.redditl.models.PostData;
 import rick.redditl.R;
-import rick.redditl.activity.CommentPage;
-import rick.redditl.activity.WebActivity;
-import rick.redditl.helper.TimeHelper;
+import rick.redditl.activities.CommentPage;
+import rick.redditl.activities.WebActivity;
 
 /**
  * Created by Rick on 2016-09-13.

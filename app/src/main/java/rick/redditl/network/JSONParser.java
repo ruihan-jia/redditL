@@ -1,4 +1,4 @@
-package rick.redditl.helper;
+package rick.redditl.network;
 
 import android.util.Log;
 

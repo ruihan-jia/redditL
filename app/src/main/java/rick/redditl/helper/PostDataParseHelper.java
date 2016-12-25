@@ -6,14 +6,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import rick.redditl.model.PostData;
-import rick.redditl.model.PreviewImageData;
+import rick.redditl.models.PostData;
+import rick.redditl.models.PreviewImageData;
 
 /**
  * Created by Rick on 2016-11-27.
  */
-public class ParserHelper {
-    static String TAG = "ParserHelper";
+public class PostDataParseHelper {
+    static String TAG = "PostDataParseHelper";
 
     /**
      * Takes JSON object of a post and parse all the information and images

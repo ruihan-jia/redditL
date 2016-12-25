@@ -1,4 +1,4 @@
-package rick.redditl.activity;
+package rick.redditl.activities;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -24,12 +24,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import rick.redditl.Constants;
-import rick.redditl.adapter.PostListAdapter;
-import rick.redditl.helper.JSONParser;
-import rick.redditl.helper.ParserHelper;
-import rick.redditl.model.PostData;
+import rick.redditl.adapters.PostListAdapter;
+import rick.redditl.helper.PostDataParseHelper;
+import rick.redditl.network.JSONParser;
+import rick.redditl.models.PostData;
 import rick.redditl.R;
-import rick.redditl.model.PreviewImageData;
 
 
 public class MainPage extends AppCompatActivity {
@@ -161,7 +160,7 @@ public class MainPage extends AppCompatActivity {
                         JSONObject postJSON = postNumber.getJSONObject("data");
 
                         //parse the JSON object and pass back a PostData object
-                        postsData[i] = ParserHelper.parsePostData(postJSON);
+                        postsData[i] = PostDataParseHelper.parsePostData(postJSON);
 
                         //add to adapter
                         adapter.add(postsData[i]);

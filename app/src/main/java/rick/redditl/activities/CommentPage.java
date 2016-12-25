@@ -1,26 +1,16 @@
-package rick.redditl.activity;
+package rick.redditl.activities;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -30,17 +20,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import rick.redditl.adapter.CommentListAdapter;
-import rick.redditl.adapter.PostListAdapter;
-import rick.redditl.helper.GeneralHelper;
-import rick.redditl.helper.ParserHelper;
+import rick.redditl.adapters.CommentListAdapter;
+import rick.redditl.helper.PostDataParseHelper;
 import rick.redditl.helper.PostHelper;
-import rick.redditl.helper.TimeHelper;
-import rick.redditl.model.CommentData;
-import rick.redditl.helper.JSONParser;
-import rick.redditl.model.PostData;
+import rick.redditl.models.CommentData;
+import rick.redditl.network.JSONParser;
+import rick.redditl.models.PostData;
 import rick.redditl.R;
-import rick.redditl.model.PreviewImageData;
 
 /**
  * There is one object that stores the post data to be displayed at top
@@ -230,7 +216,7 @@ public class CommentPage extends AppCompatActivity {
                     JSONArray jsonComments = postNcomment.getJSONObject(1).getJSONObject("data").getJSONArray("children");
 
                     //parse the JSON object for post into PostData object
-                    oPostData = ParserHelper.parsePostData(jsonPostData);
+                    oPostData = PostDataParseHelper.parsePostData(jsonPostData);
 
                     commentListView.addHeaderView(header, null, false);
                     commentListView.setAdapter(oCommentAdapter);
@@ -286,13 +272,14 @@ public class CommentPage extends AppCompatActivity {
                     String cid = commentData.getString("id");
                     String parentId = commentData.getString("parent_id");
                     String content = commentData.getString("body");
+                    String contentHtml = commentData.getString("body_html");
                     String author = commentData.getString("author");
                     int score = commentData.getInt("score");
                     long timeCreated = commentData.getInt("created_utc");
 
                     nodeNum++;
                     //creat the new comment object
-                    CommentData newReply = new CommentData(nodeNum, kind, cid, parentId, content, author, score, timeCreated, depth);
+                    CommentData newReply = new CommentData(nodeNum, kind, cid, parentId, content, contentHtml, author, score, timeCreated, depth);
 
                     //if depth 0, add the comment to the overall list of comments
                     if(depth == 0) {
