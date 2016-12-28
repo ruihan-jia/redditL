@@ -205,9 +205,7 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
     //http://stackoverflow.com/questions/12418279/android-textview-with-clickable-links-how-to-capture-clicks
     protected void setTextViewHTML(TextView text, String html)
     {
-        //html = "<div class=\"md\"><p>[test](google.com)\n<a href=\"https://google.com\">https://google.com</a>\n<a href=\"http://i.imgur.com/AqLvXJh.gifv\">to test</a>\n[imgur](<a href=\"http://www.imgur.com\">www.imgur.com</a>)</p>\n</div>";
-        //html = "lol";
-
+        //html = "<div class=\"md\"><p>[test](google.com)\n<a href=\"https://google.com\">https://google.com</a>\n<a href=\"http://i.imgur.com/AqLvXJh.gifv\">to test</a>[imgur](<a href=\"http://www.imgur.com\">www.imgur.com</a>)</p></div>";
 
         CharSequence sequence = Html.fromHtml(html);
         SpannableStringBuilder strBuilder = new SpannableStringBuilder(sequence);
@@ -216,6 +214,8 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
             //Log.d(TAG,"set url " + span.getURL());
             makeLinkClickable(strBuilder, span);
         }
+        //for some reason the strbuilder has 2 extra lines down the bottom. this is used to delete it.
+        strBuilder.delete(strBuilder.length()-2,strBuilder.length());
         text.setText(strBuilder);
         text.setMovementMethod(LinkMovementMethod.getInstance());
 
