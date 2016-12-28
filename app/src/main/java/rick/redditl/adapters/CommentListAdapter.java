@@ -1,6 +1,10 @@
 package rick.redditl.adapters;
 
+import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.text.Html;
 import android.text.Spannable;
@@ -24,6 +28,7 @@ import java.util.ArrayList;
 
 import rick.redditl.activities.CommentPage;
 import rick.redditl.helper.CommentHelper;
+import rick.redditl.helper.PostHelper;
 import rick.redditl.models.CommentData;
 import rick.redditl.R;
 import rick.redditl.helper.TimeHelper;
@@ -35,6 +40,7 @@ import rick.redditl.helper.TimeHelper;
  */
 public class CommentListAdapter extends ArrayAdapter<CommentData> {
     private Context mContext;
+    private CommentPage oCommentPage;
 
     //public LayoutInflater inflater;
     String TAG = "CommentListAdapter";
@@ -42,6 +48,8 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
     public CommentListAdapter(Context contextIn, ArrayList<CommentData> CommentDataIn) {
         super(contextIn, 0, CommentDataIn);
         mContext = contextIn;
+        oCommentPage = new CommentPage();
+
     }
 
     /*
@@ -175,15 +183,19 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
         return convertView;
     }
 
-    protected void makeLinkClickable(SpannableStringBuilder strBuilder, final URLSpan span)
+    protected void makeLinkClickable(final SpannableStringBuilder strBuilder, final URLSpan span)
     {
         int start = strBuilder.getSpanStart(span);
         int end = strBuilder.getSpanEnd(span);
         int flags = strBuilder.getSpanFlags(span);
+        final CharSequence s = strBuilder.subSequence(start, end);
         ClickableSpan clickable = new ClickableSpan() {
             public void onClick(View view) {
                 // Do something with span.getURL() to handle the link click...
-                Log.d(TAG,"test " + span.getURL());
+
+                Log.d(TAG, "text is " + s + ", content is " + span.getURL());
+                //oCommentPage.openTest(mContext, span.getURL(), s);
+                openWebDialog(mContext, span.getURL(), s);
             }
         };
         strBuilder.setSpan(clickable, start, end, flags);
@@ -208,6 +220,46 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
         text.setMovementMethod(LinkMovementMethod.getInstance());
 
     }
+
+
+    public void openWebDialog(final Context contextIn, final String url, CharSequence title){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(contextIn);
+        alertDialogBuilder.setTitle(title);
+        alertDialogBuilder.setMessage(url);
+
+        alertDialogBuilder.setPositiveButton("Go", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                //Toast.makeText(this, "You clicked yes button",Toast.LENGTH_LONG).show();
+                Log.d(TAG, "go");
+                PostHelper.openWeb(url, contextIn);
+            }
+        });
+
+        alertDialogBuilder.setNeutralButton("Copy", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                //Toast.makeText(this, "You clicked yes button",Toast.LENGTH_LONG).show();
+                Log.d(TAG, "copy");
+                android.content.ClipboardManager clipboard = (ClipboardManager)getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("simple text",
+                        url);
+                clipboard.setPrimaryClip(clip);
+            }
+        });
+
+        alertDialogBuilder.setNegativeButton("Share", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.d(TAG, "share");
+                //finish();
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
 
 
 

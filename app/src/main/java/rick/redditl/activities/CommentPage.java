@@ -1,7 +1,11 @@
 package rick.redditl.activities;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,6 +65,7 @@ public class CommentPage extends AppCompatActivity {
 
     View header;
 
+
     Context context;
 
 
@@ -72,6 +78,7 @@ public class CommentPage extends AppCompatActivity {
         setContentView(R.layout.activity_comment_page);
 
         context = this;
+
 
 
         oComments = new ArrayList<CommentData>();
@@ -453,7 +460,6 @@ public class CommentPage extends AppCompatActivity {
             oCommentAdapter.notifyDataSetChanged();
         }
     }
-
 
 
 
