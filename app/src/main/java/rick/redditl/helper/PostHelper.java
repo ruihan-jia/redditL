@@ -62,7 +62,25 @@ public class PostHelper {
         spanString.setSpan(new ForegroundColorSpan(Color.BLACK), authorNsubredditText.length() - (oPostData.getSubreddit().length() + 3), authorNsubredditText.length(), 0);// set color
         authorNsubreddit.setText(spanString);
 
+        //thumbnail image
+        String thumbnailURL = oPostData.getThumbnailURL();
+        //not good practice. small hack
+        //thumbnail url could be in the form of "http://..." or "default" or "self" or ""
+        if(thumbnailURL.length() > 7){
+            if (oPostData.getPreviewThumbnail() != null){
+                previewImageView.setImageBitmap(oPostData.getPreviewThumbnail());
+            }else{
+                //make request to server for preview image, then fill postdata with image.
+                new previewImageTask(previewImageView,oPostData).execute(oPostData.getThumbnailURL());
+            }
+        }
+        else{
+            previewImageView.setImageResource(R.mipmap.reddit_logo_img);
+        }
 
+
+        /*
+        //no longer needs to get preview image from server since we can use thumbnail url
         //preview image
         if(oPostData.getPreviewSource() != null){
             if (oPostData.getPreviewThumbnail() != null){
@@ -75,6 +93,7 @@ public class PostHelper {
         else{
             previewImageView.setImageResource(R.mipmap.reddit_logo_img);
         }
+        */
 
         //expanded image
         if(oPostData.getImageExpanded() == false) {

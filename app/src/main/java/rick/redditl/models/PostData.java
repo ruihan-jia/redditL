@@ -24,6 +24,7 @@ public class PostData {
     private PreviewImageData previewSource;
     private PreviewImageData[] previewImagesRes;
     private String previewID;
+    private String thumbnailURL;
     private Bitmap previewThumbnail;
 
     //expanded images
@@ -37,7 +38,7 @@ public class PostData {
 
     public PostData(String titleIn, String subredditIn, String authorIn, int scoreIn,
                       int num_commentsIn, String permalinkIn, String urlIn, long timeCreatedIn,
-                      Boolean isSelfIn, String selfTextIn, String domainIn) {
+                      Boolean isSelfIn, String selfTextIn, String domainIn, String thumbnailURLIn) {
 
         title = titleIn;
         subreddit = subredditIn;
@@ -50,6 +51,7 @@ public class PostData {
         isSelf = isSelfIn;
         selfText = selfTextIn;
         domain = domainIn;
+        thumbnailURL = thumbnailURLIn;
 
         imageExpanded = false;
     }
@@ -96,6 +98,10 @@ public class PostData {
 
     public String getDomain() {
         return domain;
+    }
+
+    public String getThumbnailURL() {
+        return thumbnailURL;
     }
 
     public PreviewImageData getPreviewSource() {

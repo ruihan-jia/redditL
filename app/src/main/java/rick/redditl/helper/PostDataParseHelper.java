@@ -39,10 +39,11 @@ public class PostDataParseHelper {
             Boolean isSelf = postJSON.getBoolean("is_self");
             String selfText = postJSON.getString("selftext");
             String domain = postJSON.getString("domain");
+            String thumbnailURL = postJSON.getString("thumbnail");
 
             //creating the actual item in the list
             result = new PostData(title, subreddit, author, score,
-                    num_comments, permalink, url, timeCreated, isSelf, selfText, domain);
+                    num_comments, permalink, url, timeCreated, isSelf, selfText, domain, thumbnailURL);
 
 
             //if has preview

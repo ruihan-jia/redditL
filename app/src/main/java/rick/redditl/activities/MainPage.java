@@ -49,8 +49,10 @@ public class MainPage extends AppCompatActivity {
     public ArrayList<PostData> postsList;
 
 
-    Button searchSubreddit;
+    Button searchSubredditBTN;
     AlertDialog.Builder subredditDialog;
+
+    TextView errorMsgTV;
 
 
 
@@ -76,9 +78,11 @@ public class MainPage extends AppCompatActivity {
         adapter = new PostListAdapter(this, postsList);
         mainListView.setAdapter(adapter);
 
-
         //dialog elements
-        searchSubreddit = (Button) findViewById(R.id.subReddit);
+        searchSubredditBTN = (Button) findViewById(R.id.subReddit);
+
+        //elements
+        errorMsgTV = (TextView) findViewById(R.id.errorMsg);
 
 
         loadUrl("");
@@ -86,7 +90,7 @@ public class MainPage extends AppCompatActivity {
 
 
         //clicking the title text
-        searchSubreddit.setOnClickListener(new View.OnClickListener() {
+        searchSubredditBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "search subreddit clicked");
@@ -107,7 +111,9 @@ public class MainPage extends AppCompatActivity {
             url = url + "r/" + subreddit + "/.json?raw_json=1";
         }
 
+        //reset
         adapter.clear();
+        errorMsgTV.setVisibility(View.GONE);
 
         new asyncGET().execute(url);
 
@@ -187,18 +193,25 @@ public class MainPage extends AppCompatActivity {
                     JSONArray posts = data.getJSONArray("children");
 
                     int postLength = posts.length();
-                    for(int i = 0; i < postLength; i++)
-                    {
-                        JSONObject postNumber = posts.getJSONObject(i);
-                        JSONObject postJSON = postNumber.getJSONObject("data");
+                    if(postLength > 0) {
+                        for(int i = 0; i < postLength; i++)
+                        {
+                            JSONObject postNumber = posts.getJSONObject(i);
+                            JSONObject postJSON = postNumber.getJSONObject("data");
 
-                        //parse the JSON object and add the PostData object to the adapter
-                        adapter.add(PostDataParseHelper.parsePostData(postJSON));
+                            //parse the JSON object and add the PostData object to the adapter
+                            adapter.add(PostDataParseHelper.parsePostData(postJSON));
 
+                        }
+                    } else {
+                        errorMsgTV.setVisibility(View.VISIBLE);
                     }
+
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    errorMsgTV.setVisibility(View.VISIBLE);
                 }
 
                 /*
@@ -209,6 +222,8 @@ public class MainPage extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 */
+            } else {
+                errorMsgTV.setVisibility(View.VISIBLE);
             }
 
             /*
@@ -266,10 +281,6 @@ public class MainPage extends AppCompatActivity {
 
 
 
-    class WebAppInterface {
-        @JavascriptInterface
-        public String toString() { return "injectedObject"; }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

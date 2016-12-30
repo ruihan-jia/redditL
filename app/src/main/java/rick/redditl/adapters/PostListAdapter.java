@@ -91,6 +91,8 @@ public class PostListAdapter extends ArrayAdapter<PostData> {
         ImageView previewImageView = (ImageView) convertView.findViewById(R.id.previewImage);
         final ImageView expandedImageView = (ImageView) convertView.findViewById(R.id.expandedImage);
 
+        Log.d(TAG, "the post is " + postItem.getTitle());
+
         //set the post data to elements
         PostHelper.setPostDataToView(postItem, score, titleText, commentsNum, authorNsubreddit, previewImageView, expandedImageView);
 
