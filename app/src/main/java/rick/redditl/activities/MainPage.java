@@ -1,11 +1,15 @@
 package rick.redditl.activities;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
@@ -13,7 +17,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -33,17 +41,18 @@ import rick.redditl.R;
 
 public class MainPage extends AppCompatActivity {
 
-    private TextView displayData;
-
     String TAG = "MainPage";
 
-    PostData[] postsData;
-
+    //listview related variables
     public ListView mainListView;
-
+    PostListAdapter adapter;
     public ArrayList<PostData> postsList;
 
-    PostListAdapter adapter;
+
+    Button searchSubreddit;
+    AlertDialog.Builder subredditDialog;
+
+
 
 
     @Override
@@ -60,21 +69,45 @@ public class MainPage extends AppCompatActivity {
         Constants.screenWidth = size.x;
         Constants.screenHeight = size.y;
 
-
-        //displayData = (TextView) findViewById(R.id.displayData);
+        //listview related variables
         mainListView = (ListView) findViewById(R.id.mainListView);
-
-        postsData = new PostData[26];
-
         postsList = new ArrayList<PostData>();
-
+        //listview adapters
         adapter = new PostListAdapter(this, postsList);
         mainListView.setAdapter(adapter);
 
-        String url = "https://www.reddit.com/.json";
-        url = url + "?raw_json=1";
+
+        //dialog elements
+        searchSubreddit = (Button) findViewById(R.id.subReddit);
 
 
+        loadUrl("");
+
+
+
+        //clicking the title text
+        searchSubreddit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "search subreddit clicked");
+                //subredditDialog.show();
+                showSubRedditDialog();
+            }
+        });
+
+    }
+
+    protected void loadUrl(String subreddit) {
+        String url = "https://www.reddit.com/";
+        Log.d(TAG,"input subreddit is " + subreddit);
+
+        if(subreddit == "" || subreddit == null || subreddit.isEmpty()) {
+            url = url + ".json?raw_json=1";
+        } else {
+            url = url + "r/" + subreddit + "/.json?raw_json=1";
+        }
+
+        adapter.clear();
 
         new asyncGET().execute(url);
 
@@ -159,12 +192,8 @@ public class MainPage extends AppCompatActivity {
                         JSONObject postNumber = posts.getJSONObject(i);
                         JSONObject postJSON = postNumber.getJSONObject("data");
 
-                        //parse the JSON object and pass back a PostData object
-                        postsData[i] = PostDataParseHelper.parsePostData(postJSON);
-
-                        //add to adapter
-                        adapter.add(postsData[i]);
-
+                        //parse the JSON object and add the PostData object to the adapter
+                        adapter.add(PostDataParseHelper.parsePostData(postJSON));
 
                     }
 
@@ -192,6 +221,48 @@ public class MainPage extends AppCompatActivity {
         }
 
     }
+
+
+
+
+    public void showSubRedditDialog(){
+        subredditDialog = new AlertDialog.Builder(this);
+        subredditDialog.setTitle("Enter subreddit name:");
+
+        //set up container to wrap around linearlayout
+        LinearLayout container = new LinearLayout(this);
+        container.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(80, 20, 80, 0); //left top right bottom
+        // Set up the input
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        input.setLayoutParams(lp);
+        input.setGravity(android.view.Gravity.TOP | android.view.Gravity.LEFT);
+        //setup container and dialog
+        container.addView(input, lp);
+        subredditDialog.setView(container);
+
+        // Set up the buttons
+        subredditDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String inputText = input.getText().toString();
+                Log.d(TAG,"Subreddit searched for is " + inputText);
+                //reload everything
+                loadUrl(inputText);
+            }
+        });
+        subredditDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        subredditDialog.show();
+    }
+
 
 
 

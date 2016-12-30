@@ -215,7 +215,8 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
             makeLinkClickable(strBuilder, span);
         }
         //for some reason the strbuilder has 2 extra lines down the bottom. this is used to delete it.
-        strBuilder.delete(strBuilder.length()-2,strBuilder.length());
+        if(strBuilder.length() >= 2)
+            strBuilder.delete(strBuilder.length()-2,strBuilder.length());
         text.setText(strBuilder);
         text.setMovementMethod(LinkMovementMethod.getInstance());
 
