@@ -15,7 +15,8 @@ public class CommentData {
     public String TAG = "CommentData";
 
     private int nodeNum;    //gives each comment a number to keep track in the tree
-    private String kind;     //could be t1, more or listing. listing does nothing
+    private String kind;     //could be t1, more or listing. listing does nothing. could also be t3, which is the post info at the top
+
     //common
     private String cid;
     private String parentId;
@@ -33,7 +34,11 @@ public class CommentData {
     private ArrayList<CommentData> replies;
 
     //more
+    //if the kind is more, the count could be 0 and above
+    //if above 0, it's "load more comments" and has its own id, ids of its children
+    //if 0, it's "continue this thread". own id is "_", name is "t1__" and does not have children id
     private int count;
+    private ArrayList<String> children; //for load more comments, children are the list to be loaded
 
 
 
@@ -42,6 +47,7 @@ public class CommentData {
 
     }
 
+    //constructor for normal comment with content
     public CommentData(int nodeNumIn, String kindIn, String cidIn, String parentIdIn, String contentIn, String contentHtmlIn, String authorIn,
                        int scoreIn,long timeCreatedIn,int depthIn) {
 
@@ -62,14 +68,18 @@ public class CommentData {
                 ", author is " + author + ", depth is " + depth);
     }
 
-    public CommentData(int nodeNumIn, String kindIn, String cidIn, String parentIdIn) {
+    public CommentData(int nodeNumIn, String kindIn, String cidIn, String parentIdIn, int countIn, ArrayList<String> childrenIn,int depthIn) {
         nodeNum = nodeNumIn;
         kind = kindIn;
         cid = cidIn;
         parentId = parentIdIn;
+        count = countIn;
+        children = childrenIn;
+        depth = depthIn;
 
         hidden = false;
     }
+
 
     public int getNodeNum() {
         return nodeNum;
@@ -123,6 +133,10 @@ public class CommentData {
         return count;
     }
 
+    public ArrayList<String> getChildren() {
+        return children;
+    }
+
     public ArrayList<CommentData> getReplies() {
         return replies;
     }
@@ -137,6 +151,10 @@ public class CommentData {
 
     public void setGone(Boolean goneIn) {
         gone = goneIn;
+    }
+
+    public void setCount(int countIn) {
+        count = countIn;
     }
 
     /**

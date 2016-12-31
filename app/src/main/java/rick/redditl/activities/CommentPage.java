@@ -316,6 +316,39 @@ public class CommentPage extends AppCompatActivity {
                         newReply.setReplies(commentReplies);
                     }
 
+                }else if(kind.equals("more")) {
+                    //get information
+                    String cid = commentData.getString("id");
+                    String parentId = commentData.getString("parent_id");
+                    int count = commentData.getInt("count");
+
+                    ArrayList<String> children = new ArrayList<String>();
+
+                    Log.d(TAG, "Kind more comment, id is " + cid + ", count is " + count + ", depth is " + depth);
+
+                    if(count > 0) {
+                        //getting preview image resolutions
+                        JSONArray childComments = commentData.getJSONArray("children");
+                        int childrenNum = childComments.length();
+                        for (int j = 0; j < childrenNum; j++) {
+                            children.add(childComments.getString(j));
+                            Log.d(TAG, "child comment is " + childComments.getString(j));
+                        }
+                    }
+
+                    nodeNum++;
+                    //creat the new comment object
+                    CommentData newReply = new CommentData(nodeNum, kind, cid, parentId, count, children, depth);
+
+                    //if depth 0, add the comment to the overall list of comments
+                    if(depth == 0) {
+                        oComments.add(newReply);
+                    }
+                    else {
+                        replies.add(newReply);
+                        oCommentAdapter.add(newReply);
+                    }
+
                 }
 
             }

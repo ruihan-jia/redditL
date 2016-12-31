@@ -83,17 +83,23 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
         LinearLayout layoutUtilLL = (LinearLayout) convertView.findViewById(R.id.layoutUtility);
         Button permalinkBTN = (Button) convertView.findViewById(R.id.permalink);
         Button parentBTN = (Button) convertView.findViewById(R.id.parent);
+        LinearLayout kindT1LL = (LinearLayout) convertView.findViewById(R.id.kindK1);
+        LinearLayout kindMoreLL = (LinearLayout) convertView.findViewById(R.id.kindMore);
+        Button loadMoreBTN = (Button) convertView.findViewById(R.id.loadMore);
+        Button continueThreadBTN = (Button) convertView.findViewById(R.id.continueThread);
 
 
 
 
-        //====================setting all the elements=======================
+        //====================setting all the elements to default=======================
 
         if(layoutMainLL.getVisibility() == LinearLayout.GONE){layoutMainLL.setVisibility(LinearLayout.VISIBLE);}
         layoutDepthLL.setVisibility(LinearLayout.VISIBLE);
         layoutUtilLL.setVisibility(LinearLayout.VISIBLE);
+        kindT1LL.setVisibility(LinearLayout.VISIBLE);
         bodyTV.setVisibility(View.VISIBLE);
         hideBTN.setVisibility(View.VISIBLE);
+        kindMoreLL.setVisibility(LinearLayout.GONE);
 
         //check if hidden or gone
         //gone deprecated. since gone comments are removed from listadapter object
@@ -105,13 +111,12 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
 
                     showBTN.setVisibility(View.GONE);
 
-                    //display information
+                    //set depth to the right
                     android.view.ViewGroup.LayoutParams layoutParams = depthDummy.getLayoutParams();
                     layoutParams.width = oComment.getDepth()*20;
                     depthDummy.setLayoutParams(layoutParams);
 
-                    Log.w(TAG, "depth is " + oComment.getDepth());
-
+                    //display information
                     authorTV.setText(oComment.getAuthor());
 
                     SpannableString spanString =  new SpannableString(oComment.getScore() + " points " + TimeHelper.timeSincePost(oComment.getTimeCreated()) + " ago");
@@ -120,6 +125,30 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
 
                     //bodyTV.setText(oComment.getContent());
                     setTextViewHTML(bodyTV,oComment.getContentHtml());
+
+                } else if (oComment.getKind().equals("more")) {
+
+                    //set various visibilities
+                    kindT1LL.setVisibility(LinearLayout.GONE);
+                    layoutUtilLL.setVisibility(LinearLayout.GONE);
+                    bodyTV.setVisibility(View.GONE);
+
+                    kindMoreLL.setVisibility(View.VISIBLE);
+
+                    if(oComment.getCount() > 0) {
+                        loadMoreBTN.setVisibility(View.VISIBLE);
+                        continueThreadBTN.setVisibility(View.GONE);
+                    } else {
+                        loadMoreBTN.setVisibility(View.GONE);
+                        continueThreadBTN.setVisibility(View.VISIBLE);
+                    }
+
+                    //display information
+                    android.view.ViewGroup.LayoutParams layoutParams = depthDummy.getLayoutParams();
+                    layoutParams.width = oComment.getDepth()*20;
+                    depthDummy.setLayoutParams(layoutParams);
+
+                    Log.w(TAG, "depth is " + oComment.getDepth());
 
                 }
             } else {

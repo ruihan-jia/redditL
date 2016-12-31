@@ -23,8 +23,38 @@
         android:layout_gravity="left">
 
 
+        <LinearLayout
+            android:id="@+id/kindMore"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:orientation="horizontal"
+            android:layout_weight="0"
+            android:layout_gravity="left"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="0dp"
+            android:visibility="gone">
+
+
+            <Button
+                android:id="@+id/loadMore"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:textSize="14dp"
+                android:text="Load More Comments"
+                android:background="@drawable/selector_hide_button" />
+
+            <Button
+                android:id="@+id/continueThread"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:textSize="14dp"
+                android:text="Continue this Thread -->"
+                android:background="@drawable/selector_hide_button" />
+
+        </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/kindK1"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:orientation="horizontal"
