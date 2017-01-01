@@ -43,6 +43,8 @@ import rick.redditl.R;
  *
  * The list adapter object is what is showing on the screen
  * While the arraylist is the actual data to fall back on
+ * the oComments can be used to search for a comment
+ * it is needed to perserve the information when comments are hidden
  */
 
 public class CommentPage extends AppCompatActivity {
@@ -79,8 +81,6 @@ public class CommentPage extends AppCompatActivity {
 
         context = this;
 
-
-
         oComments = new ArrayList<CommentData>();
         oCommentAdapter = new CommentListAdapter(this, oComments);
 
@@ -88,54 +88,36 @@ public class CommentPage extends AppCompatActivity {
 
         header = getLayoutInflater().inflate(R.layout.listadapter_comment_post_header, commentListView, false);
 
-        //commentListView.addHeaderView(header, null, false);
-
-        //commentListView.setAdapter(oCommentAdapter);
-
-
-        //getting all the elements
+        //getting all the elements for post data
         score = (TextView) header.findViewById(R.id.score);
         titleText = (TextView) header.findViewById(R.id.title);
         commentsNum = (Button) header.findViewById(R.id.num_comments);
         commentsNum1 = (TextView) header.findViewById(R.id.num_comments1);
         authorNsubreddit = (TextView) header.findViewById(R.id.authorNsubreddit);
         previewImageView = (ImageView) header.findViewById(R.id.previewImage);
-        //final ImageView expandedImageView = (ImageView) header.findViewById(R.id.expandedImage);
         expandedImageView = (ImageView) header.findViewById(R.id.expandedImage);
 
 
         Intent intent = getIntent();
         String url = intent.getStringExtra("URL");
 
-
         url = "https://www.reddit.com" + url + ".json?raw_json=1";
 
-
-
-        new asyncGET().execute(url);
-
-
+        new asyncGetComments("general", 0).execute(url);
 
 
         //clicking the title text
         titleText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //open webview activity
-                //openWeb(oPostData.getUrl());
-
                 PostHelper.openWeb(oPostData.getUrl(), context);
-
-
-
             }
         });
+
         //clicking the image thumbnail
         previewImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 //if image is not expanded, expand
                 if (oPostData.getImageExpanded() == false) {
                     new PostHelper.checkUrl(expandedImageView,oPostData, context)
@@ -145,21 +127,18 @@ public class CommentPage extends AppCompatActivity {
                     expandedImageView.setVisibility(View.GONE);
                     oPostData.setImageExpanded(false);
                 }
-
             }
         });
+
         //clicking expanded image
         expandedImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 //colapse the expanded image
                 expandedImageView.setVisibility(View.GONE);
                 oPostData.setImageExpanded(false);
-
             }
         });
-
 
 
     }
@@ -167,7 +146,7 @@ public class CommentPage extends AppCompatActivity {
 
 
     //get json data from server
-    class asyncGET extends AsyncTask<String, String, JSONObject> {
+    class asyncGetComments extends AsyncTask<String, String, JSONObject> {
 
         JSONParser jsonParser = new JSONParser();
 
@@ -175,12 +154,17 @@ public class CommentPage extends AppCompatActivity {
 
         String URL = "";
 
+        //general, loadMore
+        String mode = "";
+        //for loadMore
+        int position;
+
         private static final String TAG_SUCCESS = "success";
         private static final String TAG_MESSAGE = "message";
 
-        @Override
-        protected void onPreExecute() {
-
+        public asyncGetComments(String modeIn, int positionIn) {
+            mode = modeIn;
+            position = positionIn;
         }
 
         @Override
@@ -217,29 +201,34 @@ public class CommentPage extends AppCompatActivity {
                 //Toast.makeText(MainPage.this, json.toString(), Toast.LENGTH_LONG).show();
 
                 try {
-                    JSONArray postNcomment = json.getJSONArray("CommentInfo");
+                    if(mode == "general") {
+                        //first time loading all the comments
+                        JSONArray postNcomment = json.getJSONArray("CommentInfo");
 
-                    JSONObject jsonPostData = postNcomment.getJSONObject(0).getJSONObject("data").getJSONArray("children").getJSONObject(0).getJSONObject("data");
-                    JSONArray jsonComments = postNcomment.getJSONObject(1).getJSONObject("data").getJSONArray("children");
+                        JSONObject jsonPostData = postNcomment.getJSONObject(0).getJSONObject("data").getJSONArray("children").getJSONObject(0).getJSONObject("data");
+                        JSONArray jsonComments = postNcomment.getJSONObject(1).getJSONObject("data").getJSONArray("children");
 
-                    //parse the JSON object for post into PostData object
-                    oPostData = PostDataParseHelper.parsePostData(jsonPostData);
+                        //parse the JSON object for post into PostData object
+                        oPostData = PostDataParseHelper.parsePostData(jsonPostData);
 
-                    commentListView.addHeaderView(header, null, false);
-                    commentListView.setAdapter(oCommentAdapter);
+                        commentListView.addHeaderView(header, null, false);
+                        commentListView.setAdapter(oCommentAdapter);
 
-                    //setting all the elements
-                    PostHelper.setPostDataToView(oPostData,score, titleText, commentsNum, authorNsubreddit, previewImageView, expandedImageView);
-                    //set textview comment
-                    commentsNum1.setText(Integer.toString(oPostData.getNum_comments()) + " comments");
+                        //setting all the elements
+                        PostHelper.setPostDataToView(oPostData, score, titleText, commentsNum, authorNsubreddit, previewImageView, expandedImageView);
+                        //set textview comment. unique to comment page
+                        commentsNum1.setText(Integer.toString(oPostData.getNum_comments()) + " comments");
 
+                        //parse data for comments
+                        nodeNum = 0;
+                        parseComments(jsonComments, 0);
 
-                    //=============BEGIN parsing data for comments========================
+                    } else if(mode == "loadMore") {
+                        //called to load specific comments
+                        JSONObject data = json.getJSONObject("json").getJSONObject("data");
+                        JSONArray jsonComments = data.getJSONArray("things");
 
-                    nodeNum = 0;
-                    parseComments(jsonComments, 0);
-
-                    //=============END parsing data for comments========================
+                    }
 
 
                 } catch (JSONException e) {
@@ -363,6 +352,33 @@ public class CommentPage extends AppCompatActivity {
 
 
     }
+
+
+
+
+    public void loadMoreComments(ArrayList<String> comments, int position) {
+        //construct the url
+        String url = "https://www.reddit.com/api/morechildren.json?api_type=json&link_id=" + oPostData.getName() + "&children=";
+
+        if(comments.size() < 20) {
+            for(int i = 0; i < comments.size(); i++) {
+                url += comments.get(i) + ",";
+
+            }
+            url = url.substring(0, url.length()-1);
+            Log.d(TAG,url);
+        }
+
+        new asyncGetComments("loadMore", position).execute(url);
+
+    }
+
+
+
+
+
+//==============MANIPULATION OF OCOMMENTS DATA AND ADAPTER===========================
+
 
 
     /**

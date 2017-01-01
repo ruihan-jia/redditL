@@ -40,10 +40,12 @@ public class PostDataParseHelper {
             String selfText = postJSON.getString("selftext");
             String domain = postJSON.getString("domain");
             String thumbnailURL = postJSON.getString("thumbnail");
+            String pid = postJSON.getString("id");
+            String name = postJSON.getString("name");
 
             //creating the actual item in the list
             result = new PostData(title, subreddit, author, score,
-                    num_comments, permalink, url, timeCreated, isSelf, selfText, domain, thumbnailURL);
+                    num_comments, permalink, url, timeCreated, isSelf, selfText, domain, thumbnailURL, pid, name);
 
 
             //if has preview

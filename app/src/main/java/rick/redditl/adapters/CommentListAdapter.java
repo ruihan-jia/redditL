@@ -1,11 +1,13 @@
 package rick.redditl.adapters;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -24,14 +26,21 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import rick.redditl.activities.CommentPage;
 import rick.redditl.helper.CommentHelper;
+import rick.redditl.helper.PostDataParseHelper;
 import rick.redditl.helper.PostHelper;
 import rick.redditl.models.CommentData;
 import rick.redditl.R;
 import rick.redditl.helper.TimeHelper;
+import rick.redditl.network.JSONParser;
 
 /**
  * Created by Rick on 2016-10-02.
@@ -208,9 +217,23 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
         });
 
 
+        // When user clicks on the load more comments button,
+        loadMoreBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "Onclick load more comments position " + position1 + ". nodenum is " + oComment.getNodeNum());
+                //show the comment
+                ((CommentPage)mContext).loadMoreComments(oComment.getChildren(), position);
+            }
+        });
 
         return convertView;
     }
+
+
+
+
+
 
     protected void makeLinkClickable(final SpannableStringBuilder strBuilder, final URLSpan span)
     {
@@ -318,13 +341,6 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
 
         return marker;
     }
-
-/*
-    @Override
-    public int getCount() {
-        return ((CommentPage)mContext).getNumNonGone();
-    }
-*/
 
 
 

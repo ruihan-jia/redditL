@@ -19,6 +19,9 @@ public class PostData {
     private Boolean isSelf;
     private String selfText;
     private String domain;
+    //id for internal use
+    private String pid;
+    private String name;
 
     //preview images
     private PreviewImageData previewSource;
@@ -38,7 +41,8 @@ public class PostData {
 
     public PostData(String titleIn, String subredditIn, String authorIn, int scoreIn,
                       int num_commentsIn, String permalinkIn, String urlIn, long timeCreatedIn,
-                      Boolean isSelfIn, String selfTextIn, String domainIn, String thumbnailURLIn) {
+                      Boolean isSelfIn, String selfTextIn, String domainIn, String thumbnailURLIn,
+                    String pidIn, String nameIn) {
 
         title = titleIn;
         subreddit = subredditIn;
@@ -52,6 +56,8 @@ public class PostData {
         selfText = selfTextIn;
         domain = domainIn;
         thumbnailURL = thumbnailURLIn;
+        pid = pidIn;
+        name = nameIn;
 
         imageExpanded = false;
     }
@@ -102,6 +108,14 @@ public class PostData {
 
     public String getThumbnailURL() {
         return thumbnailURL;
+    }
+
+    public String getPid() {
+        return pid;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public PreviewImageData getPreviewSource() {
