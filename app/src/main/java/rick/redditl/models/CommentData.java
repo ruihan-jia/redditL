@@ -1,6 +1,7 @@
 package rick.redditl.models;
 import android.util.Log;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -15,6 +16,7 @@ public class CommentData {
     public String TAG = "CommentData";
 
     private int nodeNum;    //gives each comment a number to keep track in the tree
+    private ArrayList<Integer> nodeID;
     private String kind;     //could be t1, more or listing. listing does nothing. could also be t3, which is the post info at the top
 
     //common
@@ -48,10 +50,11 @@ public class CommentData {
     }
 
     //constructor for normal comment with content
-    public CommentData(int nodeNumIn, String kindIn, String cidIn, String parentIdIn, String contentIn, String contentHtmlIn, String authorIn,
+    public CommentData(int nodeNumIn, ArrayList<Integer> nodeIDIn, String kindIn, String cidIn, String parentIdIn, String contentIn, String contentHtmlIn, String authorIn,
                        int scoreIn,long timeCreatedIn,int depthIn) {
 
         nodeNum = nodeNumIn;
+        nodeID = nodeIDIn;
         kind = kindIn;
         cid = cidIn;
         parentId = parentIdIn;
@@ -64,12 +67,14 @@ public class CommentData {
 
         hidden = false;
 
-        Log.d(TAG, "comment created, nodeNum is " + nodeNumIn + ", cid is " + cid +
+        //Log.d(TAG, "comment created, nodeNum is " + nodeNumIn + ", cid is " + cid + ", author is " + author + ", depth is " + depth);
+        Log.d(TAG, "comment created, nodeID is " + nodeID + ", cid is " + cid +
                 ", author is " + author + ", depth is " + depth);
     }
 
-    public CommentData(int nodeNumIn, String kindIn, String cidIn, String parentIdIn, int countIn, ArrayList<String> childrenIn,int depthIn) {
+    public CommentData(int nodeNumIn, ArrayList<Integer> nodeIDIn, String kindIn, String cidIn, String parentIdIn, int countIn, ArrayList<String> childrenIn,int depthIn) {
         nodeNum = nodeNumIn;
+        nodeID = nodeIDIn;
         kind = kindIn;
         cid = cidIn;
         parentId = parentIdIn;
@@ -78,11 +83,18 @@ public class CommentData {
         depth = depthIn;
 
         hidden = false;
+
+        Log.d(TAG, "comment created, nodeID is " + nodeID + ", cid is " + cid +
+                ", kind is " + kind + ", depth is " + depth);
     }
 
 
     public int getNodeNum() {
         return nodeNum;
+    }
+
+    public ArrayList<Integer> getNodeID() {
+        return nodeID;
     }
 
     public String getKind() {

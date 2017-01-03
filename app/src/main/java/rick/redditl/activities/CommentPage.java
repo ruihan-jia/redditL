@@ -221,7 +221,8 @@ public class CommentPage extends AppCompatActivity {
 
                         //parse data for comments
                         nodeNum = 0;
-                        parseComments(jsonComments, 0);
+                        ArrayList<Integer> nodeID = new ArrayList<Integer>();
+                        parseComments(jsonComments, 0, nodeID);
 
                     } else if(mode == "loadMore") {
                         //called to load specific comments
@@ -250,7 +251,7 @@ public class CommentPage extends AppCompatActivity {
      * @param depth
      * @return an arraylist of commentData
      */
-    public ArrayList<CommentData> parseComments(JSONArray jsonComments, int depth) {
+    public ArrayList<CommentData> parseComments(JSONArray jsonComments, int depth, ArrayList<Integer> nodeID) {
         ArrayList<CommentData> replies = new ArrayList<CommentData>();;
 
         try{
@@ -274,8 +275,21 @@ public class CommentPage extends AppCompatActivity {
                     long timeCreated = commentData.getInt("created_utc");
 
                     nodeNum++;
+                    if(nodeID.size() > depth + 1) {
+                        for(int k = 0; k < nodeID.size() - depth + 1; k++) {
+                            Log.d(TAG, "remove last: " + (nodeID.size() - 1) + ". nodeID size is " + nodeID.size());
+                            nodeID.remove(nodeID.size() - 1);
+                        }
+                    }
+                    if(nodeID.size() <= depth) {
+                        Log.d(TAG, "add at position " + (nodeID.size()) + " to i: " + i + ". nodeID size is " + nodeID.size());
+                        nodeID.add(i);
+                    } else if(nodeID.size() == depth + 1) {
+                        Log.d(TAG, "update position " + depth + " to i: " + i + ". nodeID size is " + nodeID.size());
+                        nodeID.set(depth, i);
+                    }
                     //creat the new comment object
-                    CommentData newReply = new CommentData(nodeNum, kind, cid, parentId, content, contentHtml, author, score, timeCreated, depth);
+                    CommentData newReply = new CommentData(nodeNum, nodeID, kind, cid, parentId, content, contentHtml, author, score, timeCreated, depth);
 
                     //if depth 0, add the comment to the overall list of comments
                     if(depth == 0) {
@@ -300,7 +314,9 @@ public class CommentPage extends AppCompatActivity {
                     //if there are more replies.
                     if(jsonReplies != null) {
                         //recursively call with newly created comment and its replies info
-                        ArrayList<CommentData> commentReplies = parseComments(jsonReplies, depth + 1);
+                        ArrayList<CommentData> commentReplies = parseComments(jsonReplies, depth + 1, nodeID);
+                        nodeID.remove(nodeID.size()-1);
+                        //Log.d(TAG, "remove last: " + (nodeID.size() - 1));
                         //set the replies. else there is no replies for this object.
                         newReply.setReplies(commentReplies);
                     }
@@ -313,7 +329,7 @@ public class CommentPage extends AppCompatActivity {
 
                     ArrayList<String> children = new ArrayList<String>();
 
-                    Log.d(TAG, "Kind more comment, id is " + cid + ", count is " + count + ", depth is " + depth);
+                    //Log.d(TAG, "Kind more comment, id is " + cid + ", count is " + count + ", depth is " + depth);
 
                     if(count > 0) {
                         //getting preview image resolutions
@@ -321,13 +337,26 @@ public class CommentPage extends AppCompatActivity {
                         int childrenNum = childComments.length();
                         for (int j = 0; j < childrenNum; j++) {
                             children.add(childComments.getString(j));
-                            Log.d(TAG, "child comment is " + childComments.getString(j));
+                            //Log.d(TAG, "child comment is " + childComments.getString(j));
                         }
                     }
 
                     nodeNum++;
+                    if(nodeID.size() > depth + 1) {
+                        for(int k = 0; k < nodeID.size() - depth + 1; k++) {
+                            Log.d(TAG, "remove last: " + (nodeID.size() - 1) + ". nodeID size is " + nodeID.size());
+                            nodeID.remove(nodeID.size() - 1);
+                        }
+                    }
+                    if(nodeID.size() <= depth) {
+                        Log.d(TAG, "add at position " + (nodeID.size()) + " to i: " + i + ". nodeID size is " + nodeID.size());
+                        nodeID.add(i);
+                    } else if(nodeID.size() == depth + 1) {
+                        Log.d(TAG, "update position " + depth + " to i: " + i + ". nodeID size is " + nodeID.size());
+                        nodeID.set(depth, i);
+                    }
                     //creat the new comment object
-                    CommentData newReply = new CommentData(nodeNum, kind, cid, parentId, count, children, depth);
+                    CommentData newReply = new CommentData(nodeNum, nodeID, kind, cid, parentId, count, children, depth);
 
                     //if depth 0, add the comment to the overall list of comments
                     if(depth == 0) {
