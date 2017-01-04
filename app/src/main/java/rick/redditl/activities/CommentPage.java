@@ -50,7 +50,10 @@ import rick.redditl.R;
 public class CommentPage extends AppCompatActivity {
 
     public PostData oPostData;
+    //this list stores actual data that cannot be deleted
     public ArrayList<CommentData> oComments;
+    //this list is used in conjecture with the commentlistadapter
+    public ArrayList<CommentData> commentAdapterList;
     CommentListAdapter oCommentAdapter;
     ListView commentListView;
     int nodeNum = 0;
@@ -82,7 +85,8 @@ public class CommentPage extends AppCompatActivity {
         context = this;
 
         oComments = new ArrayList<CommentData>();
-        oCommentAdapter = new CommentListAdapter(this, oComments);
+        commentAdapterList = new ArrayList<CommentData>();
+        oCommentAdapter = new CommentListAdapter(this, commentAdapterList);
 
         commentListView = (ListView) findViewById(R.id.commentListView);
 
@@ -277,29 +281,36 @@ public class CommentPage extends AppCompatActivity {
                     nodeNum++;
                     if(nodeID.size() > depth + 1) {
                         for(int k = 0; k < nodeID.size() - depth + 1; k++) {
-                            Log.d(TAG, "remove last: " + (nodeID.size() - 1) + ". nodeID size is " + nodeID.size());
+                            //Log.d(TAG, "remove last: " + (nodeID.size() - 1) + ". nodeID size is " + nodeID.size());
                             nodeID.remove(nodeID.size() - 1);
                         }
                     }
                     if(nodeID.size() <= depth) {
-                        Log.d(TAG, "add at position " + (nodeID.size()) + " to i: " + i + ". nodeID size is " + nodeID.size());
+                        //Log.d(TAG, "add at position " + (nodeID.size()) + " to i: " + i + ". nodeID size is " + nodeID.size());
                         nodeID.add(i);
                     } else if(nodeID.size() == depth + 1) {
-                        Log.d(TAG, "update position " + depth + " to i: " + i + ". nodeID size is " + nodeID.size());
+                        //Log.d(TAG, "update position " + depth + " to i: " + i + ". nodeID size is " + nodeID.size());
+                        nodeID.set(depth, i);
+                    } else {
+                        //if for some reason the size is still bigger than the depth then remove again
+                        Log.d(TAG, "rare case remove last: " + (nodeID.size() - 1) + ". nodeID size is " + nodeID.size());
+                        nodeID.remove(nodeID.size() - 1);
                         nodeID.set(depth, i);
                     }
                     //creat the new comment object
                     CommentData newReply = new CommentData(nodeNum, nodeID, kind, cid, parentId, content, contentHtml, author, score, timeCreated, depth);
 
+
                     //if depth 0, add the comment to the overall list of comments
                     if(depth == 0) {
                         oComments.add(newReply);
+                        Log.d(TAG,"Depth 0 reply added with " + newReply.getAuthor());
                     }
                     else {
                         replies.add(newReply);
-                        oCommentAdapter.add(newReply);
                     }
-                    //oCommentAdapter.add(newReply);
+
+                    oCommentAdapter.add(newReply);
 
                     JSONArray jsonReplies = null;
                     //if json has replies and the reply is not empty,
@@ -307,7 +318,6 @@ public class CommentPage extends AppCompatActivity {
                         if(!commentData.get("replies").equals("")) {
                             //set json reply info
                             jsonReplies = commentData.getJSONObject("replies").getJSONObject("data").getJSONArray("children");
-
                         }
                     }
 
@@ -315,11 +325,14 @@ public class CommentPage extends AppCompatActivity {
                     if(jsonReplies != null) {
                         //recursively call with newly created comment and its replies info
                         ArrayList<CommentData> commentReplies = parseComments(jsonReplies, depth + 1, nodeID);
-                        nodeID.remove(nodeID.size()-1);
+                        //nodeID.remove(nodeID.size()-1);
                         //Log.d(TAG, "remove last: " + (nodeID.size() - 1));
                         //set the replies. else there is no replies for this object.
                         newReply.setReplies(commentReplies);
                     }
+
+
+
 
                 }else if(kind.equals("more")) {
                     //get information
@@ -344,15 +357,15 @@ public class CommentPage extends AppCompatActivity {
                     nodeNum++;
                     if(nodeID.size() > depth + 1) {
                         for(int k = 0; k < nodeID.size() - depth + 1; k++) {
-                            Log.d(TAG, "remove last: " + (nodeID.size() - 1) + ". nodeID size is " + nodeID.size());
+                            //Log.d(TAG, "remove last: " + (nodeID.size() - 1) + ". nodeID size is " + nodeID.size());
                             nodeID.remove(nodeID.size() - 1);
                         }
                     }
                     if(nodeID.size() <= depth) {
-                        Log.d(TAG, "add at position " + (nodeID.size()) + " to i: " + i + ". nodeID size is " + nodeID.size());
+                        //Log.d(TAG, "add at position " + (nodeID.size()) + " to i: " + i + ". nodeID size is " + nodeID.size());
                         nodeID.add(i);
                     } else if(nodeID.size() == depth + 1) {
-                        Log.d(TAG, "update position " + depth + " to i: " + i + ". nodeID size is " + nodeID.size());
+                        //Log.d(TAG, "update position " + depth + " to i: " + i + ". nodeID size is " + nodeID.size());
                         nodeID.set(depth, i);
                     }
                     //creat the new comment object
@@ -361,11 +374,13 @@ public class CommentPage extends AppCompatActivity {
                     //if depth 0, add the comment to the overall list of comments
                     if(depth == 0) {
                         oComments.add(newReply);
+                        Log.d(TAG, "Depth 0 reply added with " + newReply.getAuthor());
                     }
                     else {
                         replies.add(newReply);
-                        oCommentAdapter.add(newReply);
                     }
+
+                    oCommentAdapter.add(newReply);
 
                 }
 
@@ -395,7 +410,7 @@ public class CommentPage extends AppCompatActivity {
 
             }
             url = url.substring(0, url.length()-1);
-            Log.d(TAG,url);
+            Log.d(TAG, url);
         }
 
         new asyncGetComments("loadMore", position).execute(url);
@@ -415,11 +430,13 @@ public class CommentPage extends AppCompatActivity {
      *
      * @param nodeNum
      */
-    public void hideComment(int nodeNum)
+    public void hideComment(int nodeNum, ArrayList<Integer> nodeID)
     {
+        //testMethod(oComments);
 
-        Log.d(TAG, "hide comment with num " + nodeNum);
-        CommentData temp = findComment(oComments, nodeNum);
+        //Log.d(TAG, "hide comment with num " + nodeNum);
+        Log.d(TAG, "hide comment with nodeID " + nodeID);
+        CommentData temp = findComment(oComments, nodeNum, nodeID);
         if(temp!=null) {
             temp.hideComment();
         } else {
@@ -437,13 +454,14 @@ public class CommentPage extends AppCompatActivity {
      * @param nodeNum the nodeNum of the comment being shown
      * @param position the position of the comment being shown
      */
-    public void showComment(int nodeNum, int position)
+    public void showComment(int nodeNum, ArrayList<Integer> nodeID, int position)
     {
 
-        Log.d(TAG, "show comment with num " + nodeNum);
+        //Log.d(TAG, "show comment with num " + nodeNum);
+        Log.d(TAG, "show comment with nodeID " + nodeID);
 
         //find and change the info in the oComments array
-        CommentData temp = findComment(oComments, nodeNum);
+        CommentData temp = findComment(oComments, nodeNum, nodeID);
         if(temp!=null) {
             //temp.showComment();
             insertListAdapterElements(temp, position);
@@ -500,12 +518,32 @@ public class CommentPage extends AppCompatActivity {
      * @param nodeNum the nodeNum of the comment that need to be found
      * @return the CommentData object found. if not found, return null
      */
-    public CommentData findComment(ArrayList<CommentData> mComments, int nodeNum) {
+    public CommentData findComment(ArrayList<CommentData> mComments, int nodeNum, ArrayList<Integer> nodeID) {
         int cLen = mComments.size();
         int j = 1;
 
-        for(int i = 0; i < cLen; i++){
 
+
+        for(int i = 0; i < cLen; i++){
+            int depth = mComments.get(i).getDepth();
+
+            Log.d(TAG,"mComment nodeID is " + mComments.get(i).getNodeID() + ", target is " + nodeID + ", depth is " + depth);
+            Log.d(TAG,"mComment nodeID at " + depth + " is " + mComments.get(i).getNodeID().get(depth) + ". nodeID at " + depth + " is " + nodeID.get(depth));
+
+            if(mComments.get(i).getNodeID().get(depth) == nodeID.get(depth)) {
+                Log.d(TAG, "Should go down this path");
+                //if this comment is the one, return
+                if(mComments.get(i).getNodeID() == nodeID || mComments.get(i).getDepth() == nodeID.size() - 1) {
+                    Log.d(TAG, "This is the one");
+                    return mComments.get(i);
+                } else {
+                    //go to next level to check for num
+                    Log.d(TAG, "Check for children");
+                    return findComment(mComments.get(i).getReplies(), nodeNum, nodeID);
+                }
+            }
+
+            /*
             //reached last comment in the arraylist of comments or nodeNum is before the next comment
             if(j >= cLen || mComments.get(j).getNodeNum() > nodeNum) {
                 //if this comment is the one, return
@@ -513,11 +551,12 @@ public class CommentPage extends AppCompatActivity {
                     return mComments.get(i);
                 } else {
                     //go to next level to check for num
-                    return findComment(mComments.get(i).getReplies(), nodeNum);
+                    return findComment(mComments.get(i).getReplies(), nodeNum, nodeID);
                 }
             }
 
             j++;
+            */
         }
 
         return null;
@@ -539,6 +578,17 @@ public class CommentPage extends AppCompatActivity {
         }
     }
 
+
+
+    public void testMethod(ArrayList<CommentData> mComments) {
+        int cLen = mComments.size();
+        for(int i = 0; i < cLen; i++) {
+            Log.d(TAG, "mComment nodeID(" + i + ") is " + mComments.get(i).getNodeID() + ", author is " + mComments.get(i).getAuthor() + ", depth is " + mComments.get(i).getDepth() + ", replies are " + mComments.get(i).getReplies());
+            if(mComments.get(i).getReplies()!=null)
+                testMethod(mComments.get(i).getReplies());
+        }
+        return;
+    }
 
 
 

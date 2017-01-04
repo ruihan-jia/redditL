@@ -54,7 +54,8 @@ public class CommentData {
                        int scoreIn,long timeCreatedIn,int depthIn) {
 
         nodeNum = nodeNumIn;
-        nodeID = nodeIDIn;
+        nodeID = (ArrayList<Integer>)nodeIDIn.clone();
+        //nodeID = nodeIDIn;
         kind = kindIn;
         cid = cidIn;
         parentId = parentIdIn;
@@ -74,7 +75,8 @@ public class CommentData {
 
     public CommentData(int nodeNumIn, ArrayList<Integer> nodeIDIn, String kindIn, String cidIn, String parentIdIn, int countIn, ArrayList<String> childrenIn,int depthIn) {
         nodeNum = nodeNumIn;
-        nodeID = nodeIDIn;
+        nodeID = (ArrayList<Integer>)nodeIDIn.clone();
+        //nodeID = nodeIDIn;
         kind = kindIn;
         cid = cidIn;
         parentId = parentIdIn;
@@ -83,6 +85,8 @@ public class CommentData {
         depth = depthIn;
 
         hidden = false;
+
+        author = "load more or continue";
 
         Log.d(TAG, "comment created, nodeID is " + nodeID + ", cid is " + cid +
                 ", kind is " + kind + ", depth is " + depth);
@@ -155,6 +159,7 @@ public class CommentData {
 
     public void setReplies(ArrayList<CommentData> repliesIn) {
         replies = repliesIn;
+        //replies = (ArrayList<CommentData>)repliesIn.clone();
     }
 
     public void setHidden(Boolean hiddenIn) {

@@ -193,10 +193,11 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
         hideBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "Onclick hide position " + position1 + ". nodenum is " + oComment.getNodeNum());
+                //Log.d(TAG, "Onclick hide position " + position1 + ". nodenum is " + oComment.getNodeNum());
+                Log.d(TAG, "Onclick hide position " + position1 + ". nodeID is " + oComment.getNodeID());
 
                 //change the data in CommentData arraylist
-                ((CommentPage)mContext).hideComment(oComment.getNodeNum());
+                ((CommentPage)mContext).hideComment(oComment.getNodeNum(), oComment.getNodeID());
 
                 //remove the data from the list adapter object
                 ((CommentPage)mContext).removeListAdapterElements(findChildCommentsPos(position));
@@ -210,9 +211,10 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
         showBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "Onclick show position " + position1 + ". nodenum is " + oComment.getNodeNum());
+                //Log.d(TAG, "Onclick show position " + position1 + ". nodenum is " + oComment.getNodeNum());
+                Log.d(TAG, "Onclick show position " + position1 + ". nodeID is " + oComment.getNodeID());
                 //show the comment
-                ((CommentPage)mContext).showComment(oComment.getNodeNum(), position1);
+                ((CommentPage)mContext).showComment(oComment.getNodeNum(), oComment.getNodeID(), position1);
             }
         });
 
