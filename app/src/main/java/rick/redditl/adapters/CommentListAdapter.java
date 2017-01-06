@@ -187,22 +187,22 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
         }
 
 
-        final int position1 = position;
+        //final int position1 = position;
+
+        //====================BUTTON ONCLICK================================================
 
         // When user clicks on the hide button, call the hideComment method from CommentPage.
         hideBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Log.d(TAG, "Onclick hide position " + position1 + ". nodenum is " + oComment.getNodeNum());
-                Log.d(TAG, "Onclick hide position " + position1 + ". nodeID is " + oComment.getNodeID());
+                Log.d(TAG, "Onclick hide position " + position + ". nodeID is " + oComment.getNodeID());
 
                 //change the data in CommentData arraylist
-                ((CommentPage)mContext).hideComment(oComment.getNodeNum(), oComment.getNodeID());
+                ((CommentPage)mContext).hideComment(oComment.getNodeID());
 
                 //remove the data from the list adapter object
                 ((CommentPage)mContext).removeListAdapterElements(findChildCommentsPos(position));
-
-
             }
         });
 
@@ -212,9 +212,9 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
             @Override
             public void onClick(View v) {
                 //Log.d(TAG, "Onclick show position " + position1 + ". nodenum is " + oComment.getNodeNum());
-                Log.d(TAG, "Onclick show position " + position1 + ". nodeID is " + oComment.getNodeID());
+                Log.d(TAG, "Onclick show position " + position + ". nodeID is " + oComment.getNodeID());
                 //show the comment
-                ((CommentPage)mContext).showComment(oComment.getNodeNum(), oComment.getNodeID(), position1);
+                ((CommentPage)mContext).showComment(oComment.getNodeID(), position);
             }
         });
 
@@ -223,9 +223,9 @@ public class CommentListAdapter extends ArrayAdapter<CommentData> {
         loadMoreBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "Onclick load more comments position " + position1 + ". nodenum is " + oComment.getNodeNum());
-                //show the comment
-                ((CommentPage)mContext).loadMoreComments(oComment.getChildren(), position);
+                Log.d(TAG, "Onclick load more comments position " + position + ". nodeID is " + oComment.getNodeID());
+                //load the more comment
+                ((CommentPage)mContext).loadMoreComments(oComment.getNodeID(), oComment.getChildren(), position);
             }
         });
 

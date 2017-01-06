@@ -15,7 +15,7 @@ public class CommentData {
 
     public String TAG = "CommentData";
 
-    private int nodeNum;    //gives each comment a number to keep track in the tree
+    //private int nodeNum;    //gives each comment a number to keep track in the tree
     private ArrayList<Integer> nodeID;
     private String kind;     //could be t1, more or listing. listing does nothing. could also be t3, which is the post info at the top
 
@@ -50,10 +50,10 @@ public class CommentData {
     }
 
     //constructor for normal comment with content
-    public CommentData(int nodeNumIn, ArrayList<Integer> nodeIDIn, String kindIn, String cidIn, String parentIdIn, String contentIn, String contentHtmlIn, String authorIn,
+    public CommentData(ArrayList<Integer> nodeIDIn, String kindIn, String cidIn, String parentIdIn, String contentIn, String contentHtmlIn, String authorIn,
                        int scoreIn,long timeCreatedIn,int depthIn) {
 
-        nodeNum = nodeNumIn;
+        //nodeNum = nodeNumIn;
         nodeID = (ArrayList<Integer>)nodeIDIn.clone();
         //nodeID = nodeIDIn;
         kind = kindIn;
@@ -73,8 +73,8 @@ public class CommentData {
                 ", author is " + author + ", depth is " + depth);
     }
 
-    public CommentData(int nodeNumIn, ArrayList<Integer> nodeIDIn, String kindIn, String cidIn, String parentIdIn, int countIn, ArrayList<String> childrenIn,int depthIn) {
-        nodeNum = nodeNumIn;
+    public CommentData(ArrayList<Integer> nodeIDIn, String kindIn, String cidIn, String parentIdIn, int countIn, ArrayList<String> childrenIn,int depthIn) {
+        //nodeNum = nodeNumIn;
         nodeID = (ArrayList<Integer>)nodeIDIn.clone();
         //nodeID = nodeIDIn;
         kind = kindIn;
@@ -92,11 +92,11 @@ public class CommentData {
                 ", kind is " + kind + ", depth is " + depth);
     }
 
-
+/*
     public int getNodeNum() {
         return nodeNum;
     }
-
+*/
     public ArrayList<Integer> getNodeID() {
         return nodeID;
     }
@@ -179,7 +179,7 @@ public class CommentData {
      */
     public void hideComment() {
         hidden = true;
-        Log.d(TAG, "comment hidden, nodeNum: " + nodeNum + ", cid: " + cid);
+        Log.d(TAG, "comment hidden, nodeID: " + nodeID + ", cid: " + cid);
         if(replies != null) {
             for(CommentData object: replies) {
                 hideCommentHelper(object);
@@ -194,7 +194,7 @@ public class CommentData {
      */
     public void hideCommentHelper (CommentData input) {
         input.gone = true;
-        Log.d(TAG, "comment gone, nodeNum: " + nodeNum + ", cid: " + cid);
+        Log.d(TAG, "comment gone, nodeID: " + nodeID + ", cid: " + cid);
         if(input.replies != null) {
             for(CommentData object: input.replies) {
                 hideCommentHelper(object);
@@ -207,7 +207,7 @@ public class CommentData {
      */
     public void showComment() {
         hidden = false;
-        Log.d(TAG, "comment shown, nodeNum: " + nodeNum + ", cid: " + cid);
+        Log.d(TAG, "comment shown, nodeID: " + nodeID + ", cid: " + cid);
         if(replies != null) {
             for(CommentData object: replies) {
                 //for all the child comments, set to show
