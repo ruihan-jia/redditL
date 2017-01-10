@@ -21,6 +21,7 @@ public class CommentData {
 
     //common
     private String cid;
+    private String name; //cid with t1_ in front
     private String parentId;
     //utilities
     private int depth;
@@ -50,7 +51,7 @@ public class CommentData {
     }
 
     //constructor for normal comment with content
-    public CommentData(ArrayList<Integer> nodeIDIn, String kindIn, String cidIn, String parentIdIn, String contentIn, String contentHtmlIn, String authorIn,
+    public CommentData(ArrayList<Integer> nodeIDIn, String kindIn, String cidIn, String nameIn, String parentIdIn, String contentIn, String contentHtmlIn, String authorIn,
                        int scoreIn,long timeCreatedIn,int depthIn) {
 
         //nodeNum = nodeNumIn;
@@ -58,6 +59,7 @@ public class CommentData {
         //nodeID = nodeIDIn;
         kind = kindIn;
         cid = cidIn;
+        name = nameIn;
         parentId = parentIdIn;
         content = contentIn;
         contentHtml = contentHtmlIn;
@@ -107,6 +109,10 @@ public class CommentData {
 
     public String getCid() {
         return cid;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getParentId() {
